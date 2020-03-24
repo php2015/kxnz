@@ -21,4 +21,20 @@ public interface CarVideoMapper {
     List<CarVideo> queryCarVideoBySeriesId(@Param("classId") Integer classId, @Param("seriesId") Integer seriesId, @Param("modelId") Integer modelId);
 
     CarVideo queryCarVideoById(Integer id);
+
+    /**
+     *@描述 查询最热视频列表
+     *@Author XYANG
+     *@Date 2020/3/21 0021 10:13
+     *@返回值
+     */
+    List<CarVideo> queryHotList();
+
+    /**
+     *@描述 查询最新视频列表
+     *@Author XYANG
+     *@Date 2020/3/21 0021 10:13
+     *@返回值
+     */
+    List<CarVideo> queryNewList();
 }

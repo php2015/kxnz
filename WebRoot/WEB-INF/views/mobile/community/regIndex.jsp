@@ -73,41 +73,51 @@
 				<div class="mui-input-row">
 					<label>登录名</label>
 					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="请输入手机号"
-						   oninput="value=value.replace(/[^\d]/g,'')" maxlength="15" >
+						   oninput="value=value.replace(/[^\d]/g,'')" maxlength="15" />
 				</div>
 				<div class="mui-input-row">
 					<label>密码</label>
 					<input id='userPassword' type="password" class="mui-input-clear mui-input" placeholder="请输入密码"
-						maxlength="16">
+						maxlength="16"/>
+				</div>
+				<div class="mui-input-row">
+					<label>昵称</label>
+					<input id='nickName' type="text" class="mui-input-clear mui-input" placeholder="请输入昵称" maxlength="30" value="${nickName}"/>
 				</div>
 				<div class="mui-input-row">
 					<label>用户名</label>
 					<input id='userRealname' type="text" class="mui-input-clear mui-input" placeholder="请输入用户名"
-						maxlength="20" value="">
+						maxlength="20" value=""/>
 				</div>
 				<div class="mui-input-row">
 					<label>性别</label>
 					<div class="mui-radio mui-inline">
 						<label>男</label>
-						<input name="userSex" type="radio" ${userSex == 1 ? "checked" : ""} value="1">
+						<input name="userSex" type="radio" ${userSex == 1 ? "checked" : ""} value="1"/>
 					</div>
 					<div class="mui-radio mui-inline">
 						<label>女</label>
-						<input name="userSex" type="radio" ${userSex != 1 ? "checked" : ""} value="0">
+						<input name="userSex" type="radio" ${userSex != 1 ? "checked" : ""} value="0"/>
 					</div>
+				</div>
+				<div class="mui-input-row">
+					<label>年龄</label>
+					<input name="userAge" type="number" value="" maxlength="3">
 				</div>
                 <div class="mui-input-row">
                     <label>邮箱</label>
                     <input id='email' type="email" class="mui-input-clear mui-input" placeholder="请输入邮箱"
-						maxlength="30">
+						maxlength="30"/>
+                </div>
+                <div class="mui-input-row">
+                    <label>简介</label>
+                    <input name="introduction" type="text" class="mui-input-clear mui-input" maxlength="200"/>
                 </div>
                <%-- <div class="mui-input-row">
                     <label>邀请码</label>
                     <input id='invitationCode' type="text" class="mui-input-clear mui-input" placeholder=""
 						maxlength="20">
                 </div>--%>
-
-
 			</form>
 			<div class="mui-content-padded" style="margin-top: 50px">
 				<button id='register' type="button" class="mui-btn mui-btn-block mui-btn-primary">注册</button>

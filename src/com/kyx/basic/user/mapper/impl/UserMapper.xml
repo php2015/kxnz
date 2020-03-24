@@ -33,12 +33,14 @@
     <result column="user_photo" jdbcType="VARCHAR" property="userPhoto"/>
     <result column="invitation_code" jdbcType="VARCHAR" property="invitationCode"/>
     <result column="end_time" jdbcType="TIMESTAMP" property="endTime"/>
+    <result column="nick_name" jdbcType="VARCHAR" property="nickName"/>
+    <result column="introduction" jdbcType="VARCHAR" property="introduction"/>
   </resultMap>
   <sql id="Base_Column_List">
     id, user_name, user_password, user_realname, user_age, user_sex, user_address, user_phone, 
     reg_time, last_logintime, id_card, birthday, relation_phone, relation_user, relation, 
     entry_date, level, status, role_id, enable, post, shop_id,boss_account,qq,email,wechat_no,user_photo
-    ,invitation_code, end_time
+    ,invitation_code, end_time, nick_name, introduction
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -58,7 +60,7 @@
       relation_phone, relation_user, relation, 
       entry_date, level, status, 
       role_id, enable, post, 
-      shop_id,qq,email,wechat_no,user_photo,invitation_code, end_time)
+      shop_id,qq,email,wechat_no,user_photo,invitation_code, end_time, nick_name, introduction)
     values (#{id,jdbcType=INTEGER}, #{userName,jdbcType=VARCHAR}, #{userPassword,jdbcType=VARCHAR}, 
       #{userRealname,jdbcType=VARCHAR}, #{userAge,jdbcType=INTEGER}, #{userSex,jdbcType=VARCHAR}, 
       #{userAddress,jdbcType=VARCHAR}, #{userPhone,jdbcType=VARCHAR}, #{regTime,jdbcType=TIMESTAMP}, 
@@ -66,8 +68,9 @@
       #{relationPhone,jdbcType=VARCHAR}, #{relationUser,jdbcType=VARCHAR}, #{relation,jdbcType=VARCHAR}, 
       #{entryDate,jdbcType=TIMESTAMP}, #{level,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, 
       #{roleId,jdbcType=INTEGER}, #{enable,jdbcType=VARCHAR}, #{post,jdbcType=VARCHAR}, 
-      #{shopId,jdbcType=INTEGER}, #{qq,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{wechatNo,jdbcType=VARCHAR}
-      , #{userPhoto,jdbcType=VARCHAR}, #{invitationCode,jdbcType=VARCHAR}, #{endTime,jdbcType=TIMESTAMP})
+      #{shopId,jdbcType=INTEGER}, #{qq,jdbcType=VARCHAR}, #{email,jdbcType=VARCHAR}, #{wechatNo,jdbcType=VARCHAR},
+      #{userPhoto,jdbcType=VARCHAR}, #{invitationCode,jdbcType=VARCHAR}, #{endTime,jdbcType=TIMESTAMP},
+      #{nickName,jdbcType=VARCHAR}, #{introduction,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="com.kyx.basic.user.model.User" useGeneratedKeys="true" keyProperty="id" keyColumn="id"> 
     insert into user
@@ -159,6 +162,12 @@
       <if test="endTime !=null">
         end_time,
       </if>
+      <if test="nickName !=null">
+        nick_name,
+      </if>
+      <if test="introduction !=null">
+        introduction,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -247,6 +256,12 @@
       </if>
       <if test="endTime !=null">
         #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="nickName !=null">
+        #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="introduction !=null">
+        #{introduction,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -337,6 +352,12 @@
       <if test="endTime !=null">
         end_time=#{endTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="nickName !=null">
+        nick_name = #{nickName,jdbcType=VARCHAR},
+      </if>
+      <if test="introduction !=null">
+        introduction = #{introduction,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -369,6 +390,8 @@
       user_photo=#{userPhoto,jdbcType=VARCHAR},
       invitation_code=#{invitationCode,jdbcType=VARCHAR},
       end_time=#{endTime,jdbcType=TIMESTAMP},
+      nick_name=#{nickName,jdbcType=VARCHAR},
+      introduction=#{introduction,jdbcType=VARCHAR},
       shop_id = #{shopId,jdbcType=INTEGER}
     where id = #{id,jdbcType=INTEGER}
   </update>

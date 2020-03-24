@@ -59,5 +59,18 @@ public class WechatConfigServiceImpl implements WechatConfigService {
         return null;
     }
 
-
+    @Override
+    public WxMpUser getWxMpUserTest(String appId, String openId) {
+        try {
+            WechatConfig wechatConfig = wechatConfigMapper.getByAppId(appId);
+            MainConfiguration mainConfig = new MainConfiguration(wechatConfig.getAppid(), wechatConfig.getAppsecret(),
+                    wechatConfig.getToken(), wechatConfig.getEncodingaeskey());
+            WxMpService wxMpService = mainConfig.wxMpService();
+            WxMpUserService wxMpuserService = wxMpService.getUserService();
+            return wxMpuserService.userInfo(openId);
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+        }
+        return null;
+    }
 }

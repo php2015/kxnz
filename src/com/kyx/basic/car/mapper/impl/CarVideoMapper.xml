@@ -64,6 +64,16 @@
       left join car_video_class cvc on cv.class_id = cvc.id
       where cv.id = #{id, jdbcType=INTEGER}
     </select>
+  <select id="queryHotList" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    from car_video
+    order by browse_num desc, create_time desc
+  </select>
+  <select id="queryNewList" resultMap="BaseResultMap">
+    select <include refid="Base_Column_List"/>
+    from car_video
+    order by create_time desc
+  </select>
 
     <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
     delete from car_video

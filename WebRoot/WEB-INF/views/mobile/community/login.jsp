@@ -24,10 +24,6 @@
 		
 	</head>
 	<style>
-		.area {
-			margin: 20px auto 0px auto;
-		}
-
 		.mui-input-group {
 			margin-top: 10px;
 		}
@@ -75,17 +71,17 @@
 		<%--<header class="mui-bar mui-bar-nav">
 			<h1 class="mui-title">登录</h1>
 		</header>--%>
-		<div class="mui-content">
+		<div class="mui-content" style="padding-top: 30px">
 			<form id='login-form' class="mui-input-group" style="margin-top: 50px	">
 				<div class="mui-input-row">
 					<label>账号</label>
 					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="请输入手机号"
-						   value="18715171217">
+						   value="18256504106">
 				</div>
 				<div class="mui-input-row">
 					<label>密码</label>
 					<input id='password' type="password" class="mui-input-clear mui-input" placeholder="请输入密码"
-						   value="123456">
+						   value="111111">
 				</div>
 			</form>
 			<div class="mui-content-padded" style="margin-top: 50px">

@@ -426,4 +426,16 @@ public class CarInfoServiceImpl implements CarInfoService {
         List<CarModel> list = modelMapper.searchCarModelList(searchs);
         return list;
     }
+
+    @Override
+    public List<CarVideo> videoIndexList(String type, Pager pager) {
+        List<CarVideo> list = new ArrayList<> ();
+        PageHelper.startPage(pager.getPage(), pager.getLimit(), false);
+        if("hot".equalsIgnoreCase(type)){
+            list = carVideoMapper.queryHotList();
+        }else if ("new".equalsIgnoreCase(type)){
+            list = carVideoMapper.queryNewList();
+        }
+        return list;
+    }
 }

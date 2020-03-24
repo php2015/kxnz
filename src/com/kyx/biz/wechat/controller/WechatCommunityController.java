@@ -2,10 +2,7 @@ package com.kyx.biz.wechat.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.kyx.basic.annotation.SystemControllerLog;
-import com.kyx.basic.car.model.CarBrand;
-import com.kyx.basic.car.model.CarCategory;
-import com.kyx.basic.car.model.CarModel;
-import com.kyx.basic.car.model.CarVideoClass;
+import com.kyx.basic.car.model.*;
 import com.kyx.basic.car.service.CarInfoService;
 import com.kyx.basic.db.Dbs;
 import com.kyx.basic.sysparam.model.SysBasicInfo;
@@ -65,7 +62,7 @@ public class WechatCommunityController {
         if (attribute != null) {
             WxMpUser wxMpUser = (WxMpUser) attribute;
             model.addAttribute("userPhoto", wxMpUser.getHeadImgUrl());
-            model.addAttribute("userRealName", wxMpUser.getNickname());
+            model.addAttribute("nickName", wxMpUser.getNickname());
             model.addAttribute("userSex", wxMpUser.getSex() == 1 ? 1 : 0);
             model.addAttribute("userAddress", (wxMpUser.getProvince() == null ? "" : wxMpUser.getProvince()) +
                     (wxMpUser.getCity() == null ? "" : wxMpUser.getCity()));
@@ -228,5 +225,20 @@ public class WechatCommunityController {
         return carInfoService.searchCarModelList(search, pager);
     }
 
+
+    /**
+     * 首页最热最新视频列表
+     * @param type 查询类型(hot, new)
+     * @return
+     */
+    @RequestMapping("/video/indexList")
+    @ResponseBody
+    public List<CarVideo> videoIndexList(String type, Pager pager) {
+        Dbs.setDbName(Dbs.getMainDbName());
+        if (pager == null) {
+            pager = new Pager();
+        }
+        return carInfoService.videoIndexList(type, pager);
+    }
 
 }

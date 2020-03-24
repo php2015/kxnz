@@ -69,6 +69,8 @@ public class User implements Serializable {
 	private String keyword;
     private String userPhoto;
     private String invitationCode; // 邀请码
+	private String nickName;
+	private String introduction;
     private Date endTime;
 
 	private static final long serialVersionUID = 1L;
@@ -378,4 +380,20 @@ public class User implements Serializable {
     public void setInvitationCode(String invitationCode) {
         this.invitationCode = invitationCode;
     }
+
+	public String getNickName() {
+		return nickName;
+	}
+
+	public void setNickName(String nickName) {
+		this.nickName = nickName;
+	}
+
+	public String getIntroduction() {
+		return introduction;
+	}
+
+	public void setIntroduction(String introduction) {
+		this.introduction = introduction;
+	}
 }

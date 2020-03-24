@@ -13,4 +13,6 @@ public interface WechatConfigService {
 
 	WxMpUser getWxMpUser(String appId, String code);
 
+	WxMpUser getWxMpUserTest(String appId, String openid);
+
 }

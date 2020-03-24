@@ -85,4 +85,12 @@ public interface CarInfoService {
      * @return
      */
     List<CarModel> searchCarModelList(String search, Pager page);
+
+    /**
+     * 首页最热最新视频列表
+     * @param type 查询类型(hot, new)
+     * @param page 分页查询{page, limit}
+     * @return
+     */
+    List<CarVideo> videoIndexList(String type, Pager pager);
 }

@@ -372,8 +372,9 @@ public class WechatIndexController extends BaseController {
 
     Dbs.setDbName(Dbs.getMainDbName());
     String openId = "";
-    session.setAttribute(BasicContant.WXMP_APPID_SESSION, state);
-    WxMpUser wxMpUser = wechatConfigService.getWxMpUser(state, code);
+    session.setAttribute(BasicContant.WXMP_APPID_SESSION, "wx88aa9e73692893d1");
+    //WxMpUser wxMpUser = wechatConfigService.getWxMpUser(state, code);
+    WxMpUser wxMpUser = wechatConfigService.getWxMpUserTest("wx88aa9e73692893d1", "o9jvtwOM4OdZ655ca3U-r7kPk5ZA");
     if (wxMpUser != null) {
       session.setAttribute(BasicContant.WXMPUSER_SESSION, wxMpUser);
       openId = wxMpUser.getOpenId();

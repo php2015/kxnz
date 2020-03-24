@@ -218,6 +218,7 @@ public class UserServiceImpl implements UserService {
         if (user == null) {
             return new RetInfo(false, "用户信息获取错误!");
         }
+        user.setUserPhone(user.getUserPhone().trim());
         User exist = userMapper.queryExistUserName(user.getUserPhone());
         if (exist != null) {
             return new RetInfo(false, "当前账号已被使用, 不可重复注册!");

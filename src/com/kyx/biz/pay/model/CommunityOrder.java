@@ -34,7 +34,7 @@ public class CommunityOrder implements Serializable {
     private String orderNo;
 
     /**
-     * 订单类型：1、VIP充值，2、付费视频充值
+     * 订单类型：1、开通VIP 2,续费VIP 3、付费视频充值
      */
     private Integer orderType;
 

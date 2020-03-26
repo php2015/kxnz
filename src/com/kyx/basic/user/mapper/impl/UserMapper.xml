@@ -396,7 +396,7 @@
     where id = #{id,jdbcType=INTEGER}
   </update>
   <select id="querySingleUser" parameterType="java.lang.String" resultMap="BaseResultMap">
-    select 
+    select
     <include refid="Base_Column_List" />
     from user where user_name = #{userName} and status='1' and enable='1'
   </select>
@@ -438,6 +438,16 @@
     select
     <include refid="Base_Column_List"/>
     from user
-    where user_name = ${username} limit 1
+    where user_name = #{username,jdbcType = VARCHAR} limit 1
   </select>
+
+<select id="queryByPhoneAndName"   resultMap="BaseResultMap">
+
+  select
+  <include refid="Base_Column_List"/>
+  from user
+  where user_name = #{username,jdbcType = VARCHAR} and user_realname =#{userRealname,jdbcType = VARCHAR}
+
+</select>
+
 </mapper>

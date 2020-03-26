@@ -32,4 +32,7 @@ public interface UserMapper {
 	int getByRoleId(@Param("roleId") Integer roleId, @Param("shopId") Integer shopId);
 
     User queryExistUserName(@Param("username") String username);
+
+
+    User queryByPhoneAndName(@Param("username") String username, @Param("userRealname") String userRealname);
 }

@@ -7,6 +7,7 @@ import com.kyx.basic.car.service.CarInfoService;
 import com.kyx.basic.db.Dbs;
 import com.kyx.basic.sysparam.model.SysBasicInfo;
 import com.kyx.basic.sysparam.service.SysBasicInfoService;
+import com.kyx.basic.user.model.CommunityUser;
 import com.kyx.basic.user.model.User;
 import com.kyx.basic.user.service.UserService;
 import com.kyx.basic.util.BasicContant;
@@ -18,10 +19,8 @@ import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
@@ -246,4 +245,33 @@ public class WechatCommunityController {
         return "community/videos/carVideoPlayer";
     }
 
+
+    @RequestMapping("/exitBand")
+    public  String exitBand(HttpServletRequest request){
+
+
+         //删除用户登录信息
+        Object appId = request.getSession().getAttribute(BasicContant.WXMP_APPID_SESSION);
+        Object openId = request.getSession().getAttribute(BasicContant.WXMP_OPENID_SESSION);
+        if(!(org.springframework.util.StringUtils.isEmpty(appId)||org.springframework.util.StringUtils.isEmpty(openId))){
+            int mount = wechatCommunityService.removeByAppidAndOpenId(appId.toString(), openId.toString());
+            if(mount >= 1){
+                //清空session中的值
+                request.getSession().removeAttribute(BasicContant.WXMPUSER_SESSION);
+                request.getSession().removeAttribute(BasicContant.MASTERWORKER_SESSION);
+            }
+        }
+
+
+         return  "community/login";
+    }
+
+
+    @RequestMapping(value = "/modifyPwd", method = RequestMethod.POST)
+    @ResponseBody
+    @SystemControllerLog(module = "微信社区员工管理", description = "密码修改")
+    public RetInfo modifyPwd(@RequestBody @Validated CommunityUser communityUser, HttpSession session) {
+
+        return wechatCommunityService.modifyPwd(communityUser);
+    }
 }

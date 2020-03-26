@@ -1,9 +1,14 @@
 package com.kyx.biz.wechat.service;
 
 import com.kyx.basic.car.model.CarVideo;
+import com.kyx.basic.user.model.CommunityUser;
 import com.kyx.basic.user.model.User;
 import com.kyx.basic.util.RetInfo;
+import com.kyx.biz.custom.model.Custom;
+import com.kyx.basic.util.RetInfo;
 import com.kyx.biz.wechat.model.WechatCommunity;
+import com.kyx.biz.wechat.model.WechatCustomer;
+import org.springframework.ui.Model;
 import org.springframework.ui.Model;
 
 import javax.servlet.http.HttpServletRequest;
@@ -74,4 +79,12 @@ public interface WechatCommunityService {
      * @return
      */
     boolean checkUserViewVideo(User user, CarVideo video);
+
+
+    /**
+     * 修改密码
+     * @param userParam
+     * @return
+     */
+    RetInfo modifyPwd(CommunityUser communityUser);
 }

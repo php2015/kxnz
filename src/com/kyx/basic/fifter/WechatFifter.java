@@ -35,7 +35,10 @@ public class WechatFifter implements Filter{
 			requestUrl=requestUrl.substring(0,requestUrl.indexOf("?"));
 		  }
 		  String[] urlPathArr=requestUrl.split("/");
-		if (
+
+		  if(!requestUrl.contains("wechat/community/pay/notify")){
+
+		  	if (
 				urlPathArr.length > 2 &&
 						("wechat".equals(urlPathArr[1]) && !"callback".equals(urlPathArr[2]) && !"error.do".equals(urlPathArr[2])
 								&& !"bindcustinfo.do".equals(urlPathArr[2]) && !"serviceappointment.do".equals(urlPathArr[2])
@@ -46,18 +49,17 @@ public class WechatFifter implements Filter{
 						&& !"login.do".equals(urlPathArr[3]))
 		) {
 			HttpSession session = req.getSession(true);
-			Object attribute = session.getAttribute(BasicContant.MASTERWORKER_SESSION);
-			if("community".equals(urlPathArr[2]) && attribute == null){
-				request.getRequestDispatcher("/wechat/community.do").forward(request, response);
-				return;
-			}else if (!"community".equals(urlPathArr[2]) &&session.getAttribute(BasicContant.CUSTOMER_SESSION) == null) {
+			if (("community".equals(urlPathArr[2]) && session.getAttribute(BasicContant.MASTERWORKER_SESSION) == null) ||
+				(!"community".equals(urlPathArr[2]) &&session.getAttribute(BasicContant.CUSTOMER_SESSION) == null)) {
 				request.getRequestDispatcher("/wechat/error.do").forward(request, response);
 				return;
 			}
 		}
+      }
 		 chain.doFilter(new XssHttpServletRequestWrapper((HttpServletRequest) request), response);
 		
 	}
+
 
 	@Override
 	public void destroy() {

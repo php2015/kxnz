@@ -3,6 +3,7 @@ package com.kyx.biz.wechat.service.impl;
 import com.kyx.basic.car.model.CarVideo;
 import com.kyx.basic.db.Dbs;
 import com.kyx.basic.user.mapper.UserMapper;
+import com.kyx.basic.user.model.CommunityUser;
 import com.kyx.basic.user.model.User;
 import com.kyx.basic.userloginlist.mapper.UserLoginListMapper;
 import com.kyx.basic.userloginlist.model.UserLoginList;
@@ -13,6 +14,7 @@ import com.kyx.biz.pay.mapper.CommunityOrderMapper;
 import com.kyx.biz.wechat.mapper.WechatCommunityMapper;
 import com.kyx.biz.wechat.model.WechatCommunity;
 import com.kyx.biz.wechat.service.WechatCommunityService;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +29,7 @@ public class WechatCommunityServiceImpl implements WechatCommunityService {
     @Resource
     private WechatCommunityMapper wechatCommunityMapper;
     @Resource
-    private UserMapper userMapper;
+    private UserMapper userMapper ;
     @Resource
     private BCryptPasswordEncoder passwordEncoder;
     @Resource
@@ -161,5 +163,45 @@ public class WechatCommunityServiceImpl implements WechatCommunityService {
             }
         }
         return autoPlay;
+    }
+
+    /**
+     * 修改密码
+     * @param userParam
+     * @return
+     */
+    @Override
+    public RetInfo modifyPwd(CommunityUser communityUser) {
+        RetInfo retInfo = new RetInfo(false, "密码修改失败!");
+        if(null == communityUser){
+
+            retInfo.setRetMsg("填写信息有误, 请重新填写!");
+
+        }else if(StringUtils.isBlank(communityUser.getPwd3())||StringUtils.isBlank(communityUser.getPwd2())){
+
+            retInfo.setRetMsg("新密码或者确认密码不能为空!");
+        }else if(!communityUser.getPwd2().equals(communityUser.getPwd3())){
+
+            retInfo.setRetMsg("新密码和确认密码不一致!");
+        }else{
+            Dbs.setDbName(Dbs.getMainDbName());
+            //根据真实姓名和手机号查询是否存在
+            User resultUser = userMapper.queryByPhoneAndName(communityUser.getUserName(), communityUser.getUserRealname());
+            if(null!= resultUser){
+                User updateUser = new User();
+                updateUser.setId(resultUser.getId());
+                updateUser.setUserPassword(passwordEncoder.encode(communityUser.getPwd2()));
+                userMapper.updateByPrimaryKeySelective(updateUser);
+                retInfo.setSuccess(true);
+                retInfo.setRetMsg("修改成功");
+            }else{
+
+                retInfo.setRetMsg("该用户不存在!");
+            }
+        }
+
+
+
+        return retInfo;
     }
 }

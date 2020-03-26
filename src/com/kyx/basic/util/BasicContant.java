@@ -101,6 +101,22 @@ public class BasicContant {
       return code;
     }
   }
+  /**
+   * 社区视频收费类型
+   */
+  public enum CommunityOrderType {
+    VIP   (1), // VIP充值
+    RENEW (2), // 续费
+    VIDEO (3); // 付费视频充值
+
+    private Integer code;
+    CommunityOrderType(Integer code){
+      this.code = code;
+    }
+    public Integer getCode() {
+      return code;
+    }
+  }
 
   public interface shopsContant {
     String JDBC_DRIVER = "com.mysql.jdbc.Driver";

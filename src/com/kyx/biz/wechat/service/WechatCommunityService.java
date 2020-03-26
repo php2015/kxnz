@@ -1,16 +1,28 @@
 package com.kyx.biz.wechat.service;
 
+import com.kyx.basic.car.model.CarVideo;
 import com.kyx.basic.user.model.User;
-import com.kyx.biz.custom.model.Custom;
+import com.kyx.basic.util.RetInfo;
 import com.kyx.biz.wechat.model.WechatCommunity;
-import com.kyx.biz.wechat.model.WechatCustomer;
+import org.springframework.ui.Model;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 /**
  * 社区模块用户绑定
  */
 public interface WechatCommunityService {
+
+    /**
+     * 用户登录验证
+     * @param account 用户名
+     * @param password 密码
+     * @param session
+     * @param request
+     * @return
+     */
+    RetInfo login(String account, String password, HttpSession session, HttpServletRequest request);
     /**
      * 根据公众号和openid查询师傅登录的信息
      *
@@ -54,4 +66,12 @@ public interface WechatCommunityService {
      * @return
      */
     int removeByAppidAndOpenId(String appid, String openId);
+
+    /**
+     * 校验用户是否有权限观看视频
+     * @param user
+     * @param video
+     * @return
+     */
+    boolean checkUserViewVideo(User user, CarVideo video);
 }

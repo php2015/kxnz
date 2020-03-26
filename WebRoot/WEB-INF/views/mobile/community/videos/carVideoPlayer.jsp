@@ -266,7 +266,7 @@
             margin-right: 4px;
         }
 
-        .car-video-player .car-video-mask{
+        #car-video-mask{
             position: absolute;
             top: 0;
             right: 0;
@@ -274,18 +274,34 @@
             left: 0;
             background-color: black;
             text-align: center;
-            padding-top: 55px;
+            padding-top: 50px;
             z-index: 100;
+            color: #d8d8d8;
         }
-        .car-video-player .car-video-mask p{
-            font-size: 14px;
-        }
-        .car-video-player .car-video-mask p:before{
-            margin-right: 3px;
+        #car-video-mask .mui-icon-info{
             font-size: 15px;
+            color: #d8d8d8;
+            font-weight: bold;
         }
-        .car-video-player .car-video-mask span{
-
+        #car-video-mask p:before{
+            margin-right: 3px;
+            font-size: 16px;
+        }
+        #car-video-mask .car-mask-tips{
+            font-size: 13px;
+            color: #e1e1e1;
+            margin-top: 15px;
+            font-family: '华文楷体', "Helvetica", "Arial", "sans-serif";
+        }
+        #car-video-mask button{
+            padding: 6px 12px;
+            border-radius: 15px;
+            margin-top: 6px;
+            font-weight: bold;
+            font-family: '华文楷体', "Helvetica", "Arial", "sans-serif";
+        }
+        #car-video-mask button:last-child{
+            margin-left: 15px;
         }
     </style>
 </head>
@@ -300,20 +316,24 @@
 <c:if test="${not empty video}">
     <div class="mui-content">
         <div class="car-video-player video" id="J_prismPlayer">
-            <video width="100%" height="100%" ref="video" controls ${empty autoplay ? '': ''} preload="auto"
-                   webkit-playsinline=“false” playsinline=“false”
-                   id="videoPlayer" controlslist="nodownload noremoteplayback noremote"
-                   oncontextmenu="return false">
-                <source src="${video.dirUrl}" type="video/MP4">
-            </video>
-            <div class="car-video-mask ${empty autoplay ? 'mui-hidden': ''}">
-                <p class="car-mask-un-vip mui-icon mui-icon-info">您不是会员, 无法观看此视频</p>
-                <p class="car-mask-un-pay">您尚未购买当前视频, 无法观看</p>
-                <div>
-                    <span class="car-mask-to-play">购买当前视频</span>
-                    <span class="car-mask-to-vip">成为会员</span>
+            <c:if test="${not empty autoplay}">
+                <video muted width="100%" height="100%" ref="video" controls autoplay="autoplay" preload="auto"
+                       webkit-playsinline=“false” playsinline=“false”
+                       id="videoPlayer" controlslist="nodownload noremoteplayback noremote"
+                       oncontextmenu="return false">
+                    <source src="${video.dirUrl}" type="video/MP4">
+                </video>
+            </c:if>
+            <c:if test="${empty autoplay}">
+                <div id="car-video-mask">
+                    <p class="mui-icon mui-icon-info">您尚未购买当前视频, 无法观看</p>
+                    <div>
+                        <button class="car-mask-to-play mui-btn mui-btn-warning" data-value="${video.charge}">购买当前视频</button>
+                        <button class="car-mask-to-vip mui-btn mui-btn-warning">成为会员</button>
+                    </div>
+                    <p class="car-mask-tips">会员可观看所有付费视频</p>
                 </div>
-            </div>
+            </c:if>
         </div>
         <div class="car-video-body">
             <div class="car-video-title" style="margin-top: 3px">${video.title}</div>
@@ -326,7 +346,7 @@
                 <span class="float-right mui-icon mui-icon-redo" style="margin-right: 0px;">分享</span>
                 <span class="float-right mui-icon-extra mui-icon-extra-heart">收藏</span>
             </div>
-                <%--简介--%>
+            <%--简介--%>
             <div class="car-video-describe">
                 <div class="car-video-li-title bottom-line">案例简介</div>
                 <div class="car-video-li-describe bottom-line">${video.describe}</div>
@@ -342,16 +362,14 @@
                     <div class="clear-float"></div>
                 </div>
             </div>
-                <%--推荐--%>
+            <%--推荐--%>
             <div class="car-video-recommend">
                 <div class="car-video-li-title bottom-line">相关推荐</div>
                 <ul id="other-recommends" class="mui-table-view" style="margin-top: 0">
                     <li class="mui-table-view-cell mui-media">
                         <a href="wechat/carVideo/toVideoPlayer.do?videoId=${item.id}">
                             <div class="mui-media-body mui-navigate-right">
-                                <img class="car-video-recommend-image float-left"
-                                     src="mobile/shop/getImage.do?path=${video.coverUrl}"
-                                     onerror="this.onerror='';this.src='image/no_picture.jpg'"/>
+                                <img class="car-video-recommend-image float-left" src="mobile/shop/getImage.do?path=${video.coverUrl}" onerror="this.onerror='';this.src='image/no_picture.jpg'"/>
                                 <div class="car-video-recommend-body float-right member-${video.member}">
                                     <div class="car-video-recommend-title">${video.title}</div>
                                     <div class="car-video-recommend-describe">${video.describe}</div>
@@ -361,8 +379,7 @@
                                         <div class="car-video-recommend-collect float-left">
                                             <span class="mui-icon-extra mui-icon-extra-heart">${video.collectNum}</span>
                                         </div>
-                                        <div class="car-video-recommend-time float-right"><fmt:formatDate type="date"
-                                                                                                          value="${video.createTime}"/></div>
+                                        <div class="car-video-recommend-time float-right"><fmt:formatDate type="date" value="${video.createTime}"/></div>
                                     </div>
                                 </div>
                                 <div class="clear-float"></div>
@@ -371,38 +388,30 @@
                     </li>
                 </ul>
             </div>
-                <%--评论--%>
-            <div class="car-video-comment" id="car-video-comment">
+            <%--评论--%>
+            <%--<div class="car-video-comment" id="car-video-comment">
                 <div class="car-video-li-title bottom-line">评论</div>
                 <ul id="user-comments" class="mui-table-view" style="margin-top: 0">
                     <li class="mui-table-view-cell mui-media">
 
                     </li>
                 </ul>
-            </div>
-
-            <div id="danmup"></div>
+            </div>--%>
         </div>
     </div>
-    <div class=""></div>
 </c:if>
 </body>
-</html>
-<script>
-    /*var player = new Aliplayer({
-        id: 'J_prismPlayer',
-        width: '100%',
-        height: '200px',
-        autoplay: true,
-        //支持播放地址播放,此播放优先级最高
-        source: 'http://47.114.185.158/group1/M00/00/00/rBCqp15oWL6AdpL5BLerLGL8LKg942.mp4',
-        //播放方式二：点播用户推荐
-        vid: '1e067a2831b641db90d570b6480fbc40',
-        playauth: 'ddd',
-        //cover: 'http://liveroom-img.oss-cn-qingdao.aliyuncs.com/logo.png',
-        encryptType: 1, //当播放私有加密流时需要设置。
-    }, function (player) {
-        console.log('播放器创建好了。')
-    });*/
+<script type="text/javascript">
+    mui(document.body).on("tap", '#car-video-mask .car-mask-to-play', function () {
+        var money = this.getAttribute("data-value");
+        mui.confirm('购买视频案例-连途社区\n'+money+'', '确认付款', ['取消', '立即支付'], function(e) {
+            if (e.index == 1) {
+                mui.alert("支付成功!");
+            }
+        })
+    }).on('tap', '#car-video-mask .car-mask-to-vip', function () {
+        
+    })
 </script>
+</html>
 

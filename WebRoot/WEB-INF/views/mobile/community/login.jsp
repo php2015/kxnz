@@ -117,8 +117,8 @@
 							}
 						}else{
 							mui.alert("响应失败, 请稍后重试!");
+							mui(me).button('reset');
 						}
-						mui(me).button('reset');
 					},
 					error: function (xhr, type, errorThrown) {
 						mui(me).button('reset');

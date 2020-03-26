@@ -102,4 +102,11 @@ public interface CarInfoService {
      * date: 2020/3/26 0026 9:06
      **/
     boolean updateCarVideoInfo(CarVideo video);
+
+    /**
+     * 视频浏览量增加
+     * @param video 视频信息
+     * @return 增加是否成功
+     */
+    boolean addCarVideoBrowser(CarVideo video);
 }

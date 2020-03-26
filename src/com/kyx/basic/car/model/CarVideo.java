@@ -51,11 +51,18 @@ public class CarVideo implements Serializable {
      * 浏览量
      */
     private Integer browseNum;
+    public void addBrowseNum() {
+        this.browseNum = this.browseNum == null ? 1 : this.browseNum +1;
+    }
 
     /**
      * 收藏量
      */
     private Integer collectNum;
+
+    public void addCollectNum() {
+        this.collectNum = this.collectNum == null ? 1 : this.collectNum +1;
+    }
 
     /**
      * 作者id
@@ -67,21 +74,6 @@ public class CarVideo implements Serializable {
      * 收费类型(0:免费; 1:VIP; 2:收费)
      */
     private Integer member;
-    public enum Member {
-        NORMAL(0),
-        VIP(1),
-        FREE(2);
-
-        private Integer code;
-        private Member(Integer code){
-            this.code = code;
-        }
-        public Integer getCode() {
-            return code;
-        }
-
-
-    }
 
     /**
      * 费用

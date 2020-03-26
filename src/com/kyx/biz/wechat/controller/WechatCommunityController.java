@@ -9,16 +9,13 @@ import com.kyx.basic.sysparam.model.SysBasicInfo;
 import com.kyx.basic.sysparam.service.SysBasicInfoService;
 import com.kyx.basic.user.model.User;
 import com.kyx.basic.user.service.UserService;
-import com.kyx.basic.userloginlist.model.UserLoginList;
-import com.kyx.basic.userloginlist.service.UserLoginListService;
 import com.kyx.basic.util.BasicContant;
-import com.kyx.basic.util.Common;
 import com.kyx.basic.util.Pager;
 import com.kyx.basic.util.RetInfo;
+import com.kyx.biz.pay.service.CommunityOrderService;
 import com.kyx.biz.wechat.service.WechatCommunityService;
 import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -40,13 +37,11 @@ public class WechatCommunityController {
     @Resource
     private WechatCommunityService wechatCommunityService;
     @Resource
-    private BCryptPasswordEncoder passwordEncoder;
-    @Resource
-    private UserLoginListService userLoginListService;
-    @Resource
     private CarInfoService carInfoService;
     @Resource
     private SysBasicInfoService sysBasicInfoService;
+    @Resource
+    private CommunityOrderService communityOrderService;
 
     @RequestMapping("index")
     public String index(Model model, User user){
@@ -125,29 +120,7 @@ public class WechatCommunityController {
     @RequestMapping(value = "/login", method = RequestMethod.POST)
     @ResponseBody
     public RetInfo login(String account, String password, HttpSession session, HttpServletRequest request) {
-        if (Common.isEmpty(account) || Common.isEmpty(password)) {
-            return new RetInfo(RetInfo.ERROR, "用户名或密码不能为空!");
-        } else {
-            Dbs.setDbName(Dbs.getMainDbName());
-            User user = userService.queryExistUserName(account);
-            if (user == null || !passwordEncoder.matches(password, user.getUserPassword())) {
-                return new RetInfo(RetInfo.ERROR, "用户或密码不正确！");
-            } else if (!"1".equals(user.getEnable())) {
-                return new RetInfo(RetInfo.ERROR, "当前用户不可用, 请联系管理员!");
-            } else {
-                // 记录登录信息
-                UserLoginList userLoginList = new UserLoginList();
-                userLoginList.setUserId(user.getId());
-                userLoginList.setLoginTime(new Date());
-                userLoginList.setLoginIp(Common.toIpAddr(request));
-                userLoginList.setShopId(user.getShopId());
-                userLoginListService.add(userLoginList);
-                session.setAttribute(BasicContant.MASTERWORKER_SESSION, user);
-                wechatCommunityService.addWechatCommunity(session, user.getUserName());
-                return new RetInfo(RetInfo.SUCCESS, "登陆成功!");
-            }
-        }
-
+        return wechatCommunityService.login(account, password, session,request);
     }
 
     /**
@@ -260,28 +233,12 @@ public class WechatCommunityController {
         User user = (User)session.getAttribute(BasicContant.MASTERWORKER_SESSION);
         user = userService.selectByPrimaryKey(user.getId());
         model.addAttribute("user", user);
-        boolean autoPlay = false;
-        boolean isVip = user.getEndTime() != null && user.getEndTime().getTime() > (new Date()).getTime();
-        model.addAttribute("vip", isVip ? "vip" : "");
-        if(video != null){
-            if(CarVideo.Member.NORMAL.getCode().equals(video.getMember())){ // 免费
-                autoPlay = true;
-            }else {
-                if(isVip){//是会员
-                    autoPlay = true;
-                }else{ // 无会员或已到期
-                    autoPlay = true;
-                }
-            }
-        }
 
-        if(autoPlay){
-            model.addAttribute("autoPlay", "autoPlay");
-            video.setBrowseNum(video.getBrowseNum() + 1);
-            CarVideo update = new CarVideo();
-            update.setBrowseNum(video.getBrowseNum());
-            update.setId(videoId);
-            carInfoService.updateCarVideoInfo(update);
+        boolean autoPlay = wechatCommunityService.checkUserViewVideo(user, video);
+
+        if (autoPlay){
+            model.addAttribute("autoplay", "autoplay");
+            carInfoService.addCarVideoBrowser(video);
             // 添加观看历史记录
 
         }

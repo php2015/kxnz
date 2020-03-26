@@ -438,9 +438,31 @@ public class CarInfoServiceImpl implements CarInfoService {
         }
         return list;
     }
-
+    /**
+     * package: com.kyx.basic.car.service
+     * describe: 更新视频信息
+     * creat_user: xyang
+     * @param video
+     * date: 2020/3/26 0026 9:06
+     **/
     @Override
     public boolean updateCarVideoInfo(CarVideo update) {
         return carVideoMapper.updateByPrimaryKeySelective(update) > 0;
+    }
+    /**
+     * 视频浏览量增加
+     * @param video 视频信息
+     * @return 增加是否成功
+     */
+    @Override
+    public boolean addCarVideoBrowser(CarVideo video) {
+        if(video != null){
+            video.addBrowseNum();
+            CarVideo carVideo = new CarVideo();
+            carVideo.setId(video.getId());
+            carVideo.setBrowseNum(video.getBrowseNum());
+            return carVideoMapper.updateByPrimaryKeySelective(carVideo) > 0;
+        }
+        return false;
     }
 }

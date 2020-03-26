@@ -84,6 +84,24 @@ public class BasicContant {
   // 车辆邀约短信推送标题
   public static final String CAR_INVITATION_TITLE = "尊敬的客户您好，您的爱车";
 
+
+  /**
+   * 社区视频收费类型
+   */
+  public enum CarVideoMember {
+    NORMAL(0), // 免费
+    VIP   (1), // VIP
+    FREE  (2); // 收费
+
+    private Integer code;
+    CarVideoMember(Integer code){
+      this.code = code;
+    }
+    public Integer getCode() {
+      return code;
+    }
+  }
+
   public interface shopsContant {
     String JDBC_DRIVER = "com.mysql.jdbc.Driver";
 

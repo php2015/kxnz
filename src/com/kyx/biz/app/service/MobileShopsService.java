@@ -734,4 +734,11 @@ public interface MobileShopsService {
    */
   void getImage(String path, HttpServletResponse response);
 
+  /**
+   * 修改密码
+   *
+   * @param map
+   * @return
+   */
+  RetInfo resetPassWord(Map checkSignature);
 }

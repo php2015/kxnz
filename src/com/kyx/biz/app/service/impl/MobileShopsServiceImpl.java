@@ -2143,6 +2143,19 @@ public class MobileShopsServiceImpl implements MobileShopsService {
   }
 
 
+  @Override
+  public RetInfo resetPassWord(Map map)
+  {
+    if (!(Boolean) map.get("checkStatus"))
+      return new RetInfo("error", "获取数据失败，没有权限！");
+
+    User user =
+            JSON.parseObject((String) map.get("user"), User.class);
+
+    return userService.resetPassWord(user);
+  }
+
+
   /**
    *  
    */
@@ -2319,5 +2332,6 @@ public class MobileShopsServiceImpl implements MobileShopsService {
     }
 
   }
-  
+
+
 }

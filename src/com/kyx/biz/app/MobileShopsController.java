@@ -1391,6 +1391,22 @@ public class MobileShopsController {
     mobileShopsService.getImage(path, response);
   }
 
+  /**
+   * 修改密码
+   *
+   * @param params
+   * @param request
+   * @return
+   */
+  @RequestMapping(value = "/resetPassWord", produces = "text/plain; charset=utf-8")
+  @ResponseBody
+  public String resetPassWord(String params, HttpServletResponse response) {
+
+    RetInfo ret = mobileShopsService.resetPassWord(checkSignature(params));
+
+    return JSON.toJSONString(ret);
+  }
+
   // 私有
   /**
    * 校验签名返回参数信息

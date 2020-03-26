@@ -26,7 +26,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -233,6 +232,7 @@ public class WechatCommunityController {
         User user = (User)session.getAttribute(BasicContant.MASTERWORKER_SESSION);
         user = userService.selectByPrimaryKey(user.getId());
         model.addAttribute("user", user);
+        model.addAttribute("orderType", BasicContant.CommunityOrderType.VIDEO.getCode());
 
         boolean autoPlay = wechatCommunityService.checkUserViewVideo(user, video);
 

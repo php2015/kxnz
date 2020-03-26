@@ -303,6 +303,9 @@
         #car-video-mask button:last-child{
             margin-left: 15px;
         }
+        .mui-popup-button.mui-popup-button-bold{
+            font-weight: normal;
+        }
     </style>
 </head>
 <body>
@@ -328,7 +331,8 @@
                 <div id="car-video-mask">
                     <p class="mui-icon mui-icon-info">您尚未购买当前视频, 无法观看</p>
                     <div>
-                        <button class="car-mask-to-play mui-btn mui-btn-warning" data-value="${video.charge}">购买当前视频</button>
+                        <button class="car-mask-to-play mui-btn mui-btn-warning"
+                                data-value="${video.charge}" data-id="${video.id}" data-type="${orderType}">购买当前视频</button>
                         <button class="car-mask-to-vip mui-btn mui-btn-warning">成为会员</button>
                     </div>
                     <p class="car-mask-tips">会员可观看所有付费视频</p>
@@ -402,16 +406,69 @@
 </c:if>
 </body>
 <script type="text/javascript">
+    var wechatPayParam = {
+        "appId": '',     //公众号名称,由商户传入
+        "timeStamp": '',         //时间戳,自1970年以来的秒数
+        "nonceStr": '', //随机串
+        "package": '',
+        "signType": '', //微信签名方式：
+        "paySign": '' //微信签名
+    };
+    mui.init();
+
     mui(document.body).on("tap", '#car-video-mask .car-mask-to-play', function () {
         var money = this.getAttribute("data-value");
-        mui.confirm('购买视频案例-连途社区\n'+money+'', '确认付款', ['取消', '立即支付'], function(e) {
+        var viewId = this.getAttribute("data-id");
+        var orderType = this.getAttribute("data-type");
+        mui.confirm('购买视频案例-连途社区<div style="color:orange;font-size: 20px;margin-top: 8px">￥'+money+'</div>', '确认付款', ['取消', '立即支付'], function(e) {
             if (e.index == 1) {
-                mui.alert("支付成功!");
+                var param = {"payAmount": money, "viewId": viewId, "orderType": orderType, "payType": "1" };
+                mui.post('wechat/community/pay/orders.do',param, function (data) {
+                    if (data.retCode == "success"){
+                        wechatPayParam = data.retData;
+                        if (typeof WeixinJSBridge == "undefined") {
+                            if (document.addEventListener) {
+                                document.addEventListener('WeixinJSBridgeReady',
+                                    onBridgeReady, false);
+                            } else if (document.attachEvent) {
+                                document.attachEvent('WeixinJSBridgeReady',
+                                    onBridgeReady);
+                                document.attachEvent('onWeixinJSBridgeReady',
+                                    onBridgeReady);
+                            }
+                        } else {
+                            onBridgeReady();
+                        }
+                    }else{
+                        mui.alert("充值失败");
+                    }
+                });
             }
         })
     }).on('tap', '#car-video-mask .car-mask-to-vip', function () {
-        
+        mui.openWindow({
+            url: "wechat/community/wechatPay.do",
+            id: "wechatPay",
+        })
     })
+
+
+    
+    function onBridgeReady(){
+        WeixinJSBridge.invoke( 'getBrandWCPayRequest', wechatPayParam,
+            function(res){
+                if(res.err_msg == "get_brand_wcpay_request:ok" ) {
+                    console.log('支付成功');
+                    window.location.reload();
+                    //支付成功后跳转的页面
+                }else if(res.err_msg == "get_brand_wcpay_request:cancel"){
+                    console.log('支付取消');
+                }else if(res.err_msg == "get_brand_wcpay_request:fail"){
+                    console.log('支付失败');
+                    WeixinJSBridge.call('closeWindow');
+                } //使用以上方式判断前端返回,微信团队郑重提示：res.err_msg将在用户支付成功后返回ok,但并不保证它绝对可靠。
+            });
+    }
 </script>
 </html>
 

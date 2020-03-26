@@ -192,7 +192,7 @@ public class WechatCommunityServiceImpl implements WechatCommunityService {
                 updateUser.setId(resultUser.getId());
                 updateUser.setUserPassword(passwordEncoder.encode(communityUser.getPwd2()));
                 userMapper.updateByPrimaryKeySelective(updateUser);
-                retInfo.setSuccess(true);
+                retInfo.setRetCode(RetInfo.SUCCESS);
                 retInfo.setRetMsg("修改成功");
             }else{
 

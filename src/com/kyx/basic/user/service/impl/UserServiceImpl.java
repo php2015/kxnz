@@ -216,12 +216,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public RetInfo wechatRegisterUser(User user) {
         if (user == null) {
-            return new RetInfo(false, "用户信息获取错误!");
+			return new RetInfo(RetInfo.ERROR, "用户信息获取错误!");
         }
         user.setUserPhone(user.getUserPhone().trim());
         User exist = userMapper.queryExistUserName(user.getUserPhone());
         if (exist != null) {
-            return new RetInfo(false, "当前账号已被使用, 不可重复注册!");
+        	return new RetInfo(RetInfo.ERROR, "当前账号已被使用, 不可重复注册!");
         }
         //用户名使用手机号登录
         user.setUserName(user.getUserPhone());
@@ -241,9 +241,9 @@ public class UserServiceImpl implements UserService {
 		}
 		user.setRoleId(role.getId());
         if (userMapper.insertSelective(user) > 0) {
-            return new RetInfo(true, "注册成功!", userMapper.selectByPrimaryKey(user.getId()));
+            return new RetInfo(true, "注册", userMapper.selectByPrimaryKey(user.getId()));
         } else {
-            return new RetInfo(false, "信息保存失败!");
+            return new RetInfo(false, "注册");
         }
     }
 

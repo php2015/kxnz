@@ -1,9 +1,10 @@
 package com.kyx.biz.wechat.mapper;
 
 import com.kyx.biz.wechat.model.WechatCommunity;
-import com.kyx.biz.wechat.model.WechatCustomer;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
+
+import java.util.List;
 
 @Repository("wechatCommunityMapper")
 public interface WechatCommunityMapper {
@@ -19,8 +20,10 @@ public interface WechatCommunityMapper {
 
 	int updateByPrimaryKey(WechatCommunity record);
 
-	WechatCommunity getByAppidAndOpenId(@Param(value = "appId") String appId,
-                                       @Param(value = "openId") String openId);
-
+	List<WechatCommunity> getByAppidAndOpenId(@Param(value = "appId") String appId,
+											  @Param(value = "openId") String openId);
 	WechatCommunity selectByUserName(@Param(value = "userName") String userName);
+
+	int removeByAppidAndOpenId(@Param(value = "appId") String appId,
+							   @Param(value = "openId") String openId);
 }

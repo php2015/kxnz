@@ -368,17 +368,19 @@ public class WechatIndexController extends BaseController {
    */
   @RequestMapping("/community")
   public String community(HttpSession session, String state, String code) {
-    System.out.println("community start" + "---" + state + "+++++" + code);
 
     Dbs.setDbName(Dbs.getMainDbName());
     String openId = "";
-    session.setAttribute(BasicContant.WXMP_APPID_SESSION, "wx88aa9e73692893d1");
-    //WxMpUser wxMpUser = wechatConfigService.getWxMpUser(state, code);
-    WxMpUser wxMpUser = wechatConfigService.getWxMpUserTest("wx88aa9e73692893d1", "o9jvtwOM4OdZ655ca3U-r7kPk5ZA");
+    session.setAttribute(BasicContant.WXMP_APPID_SESSION, state);
+    WxMpUser wxMpUser = wechatConfigService.getWxMpUser(state, code);
+//    state = "wx88aa9e73692893d1";
+//    WxMpUser wxMpUser = wechatConfigService.getWxMpUserTest(state, "o9jvtwOM4OdZ655ca3U-r7kPk5ZA");
     if (wxMpUser != null) {
+      System.out.println("community start" + "---openid: " + wxMpUser.getOpenId());
       session.setAttribute(BasicContant.WXMPUSER_SESSION, wxMpUser);
       openId = wxMpUser.getOpenId();
     }
+    session.setAttribute(BasicContant.WXMP_OPENID_SESSION, openId);
 
     // 获取用户信息, 查询是否已绑定, 绑定后自动登录
     Object attribute = session.getAttribute(BasicContant.MASTERWORKER_SESSION);
@@ -395,6 +397,6 @@ public class WechatIndexController extends BaseController {
         }
       }
     }
-    return "community/index";
+    return "redirect:/wechat/community/index.do";
   }
 }

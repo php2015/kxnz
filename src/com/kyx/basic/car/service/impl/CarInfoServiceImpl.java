@@ -438,4 +438,9 @@ public class CarInfoServiceImpl implements CarInfoService {
         }
         return list;
     }
+
+    @Override
+    public boolean updateCarVideoInfo(CarVideo update) {
+        return carVideoMapper.updateByPrimaryKeySelective(update) > 0;
+    }
 }

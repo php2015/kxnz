@@ -46,4 +46,12 @@ public interface WechatCommunityService {
      * @return
      */
     WechatCommunity getWechatCommunityByUserName(String userName);
+
+    /**
+     * 移除微信登录记录信息
+     * @param appid
+     * @param openId
+     * @return
+     */
+    int removeByAppidAndOpenId(String appid, String openId);
 }

@@ -81,13 +81,13 @@
 						maxlength="16"/>
 				</div>
 				<div class="mui-input-row">
-					<label>昵称</label>
-					<input id='nickName' type="text" class="mui-input-clear mui-input" placeholder="请输入昵称" maxlength="30" value="${nickName}"/>
+					<label>用户名</label>
+					<input id='userRealname' type="text" class="mui-input-clear mui-input" placeholder="请输入真实姓名"
+						   maxlength="20" value=""/>
 				</div>
 				<div class="mui-input-row">
-					<label>用户名</label>
-					<input id='userRealname' type="text" class="mui-input-clear mui-input" placeholder="请输入用户名"
-						maxlength="20" value=""/>
+					<label>昵称</label>
+					<input id='nickName' type="text" class="mui-input-clear mui-input" placeholder="请输入昵称" maxlength="30" value="${nickName}"/>
 				</div>
 				<div class="mui-input-row">
 					<label>性别</label>
@@ -102,7 +102,7 @@
 				</div>
 				<div class="mui-input-row">
 					<label>年龄</label>
-					<input name="userAge" type="number" value="" maxlength="3">
+					<input name="userAge" type="text"  maxlength="3" />
 				</div>
                 <div class="mui-input-row">
                     <label>邮箱</label>
@@ -111,7 +111,7 @@
                 </div>
                 <div class="mui-input-row">
                     <label>简介</label>
-                    <input name="introduction" type="text" class="mui-input-clear mui-input" maxlength="200"/>
+                    <input name="introduction" type="text" class="mui-input-clear mui-input" maxlength="100"/>
                 </div>
                <%-- <div class="mui-input-row">
                     <label>邀请码</label>
@@ -120,12 +120,28 @@
                 </div>--%>
 			</form>
 			<div class="mui-content-padded" style="margin-top: 50px">
-				<button id='register' type="button" class="mui-btn mui-btn-block mui-btn-primary">注册</button>
+				<button id='register' type="button" class="mui-btn mui-btn-block mui-btn-primary"
+						data-loading-icon="mui-spinner mui-spinner-custom"
+						data-loading-text="注册中...">注册</button>
 			</div>
 		</div>
 		<script>
 			mui.init();
-            mui(document.body).on('tap', '.mui-btn', function(e) {
+			$("input[name=userAge]").keyup(function(){
+				var temp;
+				var result = '';
+				for(var i=0; i< this.value.length;i++){
+					temp = this.value[i];
+					if(temp >= '0' && temp <='9'){
+						result += temp;
+					}
+				}
+				this.value = parseInt(result);
+			});
+
+            mui(document.body).on('tap', '#register', function(e) {
+            	var me = this;
+				mui(me).button('loading');
                 var check = true;
                 var formData={userPhoto:$("#userPhoto").val(), userAddress: $("#userAddress").val()};
 
@@ -133,6 +149,7 @@
 				if(!(/^1[3456789]\d{9}$/.test(userPhone))){
 					mui.alert("手机号码有误，请重填");
 					check = false;
+					mui(me).button('loading');
 					return false;
 				}
 				formData.userPhone = userPhone;
@@ -141,10 +158,12 @@
 				if(!userPassword || userPassword.trim() == ""){
 					mui.alert("密码不能为空");
 					check = false;
+					mui(me).button('loading');
 					return false;
 				}else if(!(/^[\w_]{1,16}$/.test(userPassword))){
 					mui.alert("密码只能由字母、数字、下划线组成, 且长度不能超过16位");
 					check = false;
+					mui(me).button('loading');
 					return false;
 				}
 				formData.userPassword = userPassword.trim();
@@ -153,6 +172,7 @@
 				if(!userRealname || userRealname.trim() == ""){
 					mui.alert("用户名不能为空");
 					check = false;
+					mui(me).button('loading');
 					return false;
 				}
 				formData.userRealname = userRealname.trim();
@@ -161,6 +181,7 @@
 				if(!(/^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/.test(email))){
 					mui.alert("邮箱格式有误，请重填");
 					check = false;
+					mui(me).button('loading');
 					return false;
 				}
 				formData.email = email;
@@ -168,20 +189,28 @@
 				formData.userSex = $("#register-form input[name=userSex]:checked").val();
 				formData.invitationCode = $("#invitationCode").val();
 
-				console.log(formData)
+				//console.log(formData)
 				if(check) {
-					mui.post("wechat/community/register.do", {userJson: JSON.stringify(formData)}, function (res) {
-						if(res != null){
-							if(res.retCode == "success"){
+					mui.ajax("wechat/community/register.do", {
+						data: {userJson: JSON.stringify(formData)},
+						dataType: 'json',
+						type: 'post',
+						timeout: 10000,
+						success: function (res) {
+							if(res != null){
 								mui.toast(res.retMsg,{ duration:'long', type:'div' });
-                                mui.openWindow({
-                                    url: 'wechat/community.do'
-                                });
+								if(res.retCode == "success"){
+									mui.openWindow({
+										url: 'wechat/community.do'
+									});
+								}
 							}else{
 								mui.alert("响应失败, 请稍后重试!");
 							}
-						}else{
-							mui.alert("响应失败, 请稍后重试!");
+							mui(me).button('reset');
+						},
+						error: function (xhr, type, errorThrown) {
+							mui(me).button('reset');
 						}
 					});
                 }

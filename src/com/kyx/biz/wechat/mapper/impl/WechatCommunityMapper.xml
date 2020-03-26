@@ -22,6 +22,10 @@
     delete from wechat_community_info
     where id = #{id,jdbcType=INTEGER}
   </delete>
+  <delete id="removeByAppidAndOpenId">
+    delete from wechat_community_info
+    where open_id = #{openId} and app_id=#{appId}
+  </delete>
   <insert id="insert" parameterType="com.kyx.biz.wechat.model.WechatCustomer">
     insert into wechat_community_info (id, open_id, user_name, last_login, add_time, app_id)
     values (#{id,jdbcType=INTEGER}, #{openId,jdbcType=VARCHAR},

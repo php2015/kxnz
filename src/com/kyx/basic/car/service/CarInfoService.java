@@ -93,4 +93,13 @@ public interface CarInfoService {
      * @return
      */
     List<CarVideo> videoIndexList(String type, Pager pager);
+
+    /**
+     * package: com.kyx.basic.car.service
+     * describe: 更新视频信息
+     * creat_user: xyang
+     * @param video
+     * date: 2020/3/26 0026 9:06
+     **/
+    boolean updateCarVideoInfo(CarVideo video);
 }

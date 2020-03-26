@@ -85,7 +85,9 @@
 				</div>
 			</form>
 			<div class="mui-content-padded" style="margin-top: 50px">
-				<button id='login' type="button" class="mui-btn mui-btn-block mui-btn-primary">登录</button>
+				<button id='login' type="button" class="mui-btn mui-btn-block mui-btn-primary"
+						data-loading-icon="mui-spinner mui-spinner-custom"
+						data-loading-text="登录中...">登录</button>
 				<div class="link-area"><a id='reg'>注册账号</a><%-- <span class="spliter">|</span> <a id='forgetPassword'>忘记密码</a>--%>
 				</div>
 			</div>
@@ -100,23 +102,28 @@
 					url: 'wechat/community/pwdIndex.do'
 				});
 			}).on("tap", "#login", function () {
-				mui.post("wechat/community/login.do",{account:$("#account").val(), password: $("#password").val()},function(res){
-					if(res!= null){
-						if(res.retCode == "success"){
+				var me = this;
+				mui(me).button('loading');
+				mui.ajax("wechat/community/login.do", {
+					data: {account:$("#account").val(), password: $("#password").val()},
+					dataType: 'json',
+					type: 'post',
+					timeout: 10000,
+					success: function (res) {
+						if(res!= null){
 							mui.toast(res.retMsg,{ duration:'long', type:'div'});
-							mui.openWindow({
-								url: 'wechat/community.do',
-								show:{
-									autoShow:false
-								}
-							});
+							if(res.retCode == "success"){
+								mui.openWindow({ url: 'wechat/community.do', show:{ autoShow:false }});
+							}
 						}else{
-							mui.alert(res.retMsg);
+							mui.alert("响应失败, 请稍后重试!");
 						}
-					}else{
-						mui.alert("响应失败, 请稍后重试!");
+						mui(me).button('reset');
+					},
+					error: function (xhr, type, errorThrown) {
+						mui(me).button('reset');
 					}
-				})
+				});
 			});
 
 		</script>

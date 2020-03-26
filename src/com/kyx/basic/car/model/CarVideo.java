@@ -67,6 +67,21 @@ public class CarVideo implements Serializable {
      * 收费类型(0:免费; 1:VIP; 2:收费)
      */
     private Integer member;
+    public enum Member {
+        NORMAL(0),
+        VIP(1),
+        FREE(2);
+
+        private Integer code;
+        private Member(Integer code){
+            this.code = code;
+        }
+        public Integer getCode() {
+            return code;
+        }
+
+
+    }
 
     /**
      * 费用

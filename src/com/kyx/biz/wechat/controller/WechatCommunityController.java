@@ -48,6 +48,32 @@ public class WechatCommunityController {
     @Resource
     private SysBasicInfoService sysBasicInfoService;
 
+    @RequestMapping("index")
+    public String index(Model model, User user){
+        Dbs.setDbName(Dbs.getMainDbName());
+        // 轮播图
+        List<SysBasicInfo> banners = sysBasicInfoService.queryBasicInfosByFlag(SysBasicInfo.BANNERS);
+        // 满足mui显示轮播图样式, 首位各多添加一张图片
+        if (banners != null && !banners.isEmpty()) {
+            banners.add(0, banners.get(banners.size() - 1));
+            banners.add(banners.get(0));
+        }
+        model.addAttribute("banners", banners);
+        // 视频类型
+        List<CarVideoClass> videoClasses = carInfoService.queryCarVideoClass();
+        model.addAttribute("videoClass", videoClasses);
+
+        List<CarCategory> categories = carInfoService.queryCarCategoryList();
+        model.addAttribute("categorys", categories);
+
+        Pager pager = new Pager();
+        pager.setLimit(20);
+        List<CarVideo> carVideos = carInfoService.videoIndexList("Hot", pager);
+        model.addAttribute("hotVideos", carVideos);
+
+        return "community/index";
+    }
+
     /**
      * 注册用户
      *
@@ -56,7 +82,7 @@ public class WechatCommunityController {
     @RequestMapping("/regIndex")
     public String regIndex(HttpSession session, Model model) {
         if (session.getAttribute(BasicContant.MASTERWORKER_SESSION) != null) {
-            return "redirect:/wechat/community.do";
+            return "redirect:/wechat/community/index.do";
         }
         Object attribute = session.getAttribute(BasicContant.WXMPUSER_SESSION);
         if (attribute != null) {
@@ -100,14 +126,14 @@ public class WechatCommunityController {
     @ResponseBody
     public RetInfo login(String account, String password, HttpSession session, HttpServletRequest request) {
         if (Common.isEmpty(account) || Common.isEmpty(password)) {
-            return new RetInfo(false, "用户名或密码不能为空!");
+            return new RetInfo(RetInfo.ERROR, "用户名或密码不能为空!");
         } else {
             Dbs.setDbName(Dbs.getMainDbName());
             User user = userService.queryExistUserName(account);
             if (user == null || !passwordEncoder.matches(password, user.getUserPassword())) {
-                return new RetInfo("error", "用户或密码不正确！");
+                return new RetInfo(RetInfo.ERROR, "用户或密码不正确！");
             } else if (!"1".equals(user.getEnable())) {
-                return new RetInfo(false, "当前用户不可用, 请联系管理员!");
+                return new RetInfo(RetInfo.ERROR, "当前用户不可用, 请联系管理员!");
             } else {
                 // 记录登录信息
                 UserLoginList userLoginList = new UserLoginList();
@@ -118,7 +144,7 @@ public class WechatCommunityController {
                 userLoginListService.add(userLoginList);
                 session.setAttribute(BasicContant.MASTERWORKER_SESSION, user);
                 wechatCommunityService.addWechatCommunity(session, user.getUserName());
-                return new RetInfo(true, "登陆成功!");
+                return new RetInfo(RetInfo.SUCCESS, "登陆成功!");
             }
         }
 
@@ -139,48 +165,17 @@ public class WechatCommunityController {
         return "community/" + pageName;
     }
 
-    @RequestMapping("/category")
+    /**
+     * package: com.kyx.biz.wechat.controller
+     * describe: 车类型
+     * creat_user: xyang
+     * date: 2020/3/25 0025 11:30
+     **/
+    @RequestMapping("/car/category")
     @ResponseBody
     public List<CarCategory> category() {
         Dbs.setDbName(Dbs.getMainDbName());
         return carInfoService.queryCarCategoryList();
-    }
-
-    /**
-     * 社区首页
-     *
-     * @param model
-     * @return
-     */
-    @RequestMapping("/page/consultation")
-    public String consultationPage(Model model) {
-        Dbs.setDbName(Dbs.getMainDbName());
-        // 轮播图
-        List<SysBasicInfo> banners = sysBasicInfoService.queryBasicInfosByFlag(SysBasicInfo.BANNERS);
-        if (banners != null && !banners.isEmpty()) {
-            banners.add(0, banners.get(banners.size() - 1));
-            banners.add(banners.get(0));
-        }
-        model.addAttribute("banners", banners);
-        // 视频类型
-        List<CarVideoClass> videoClasses = carInfoService.queryCarVideoClass();
-        model.addAttribute("videoClass", videoClasses);
-        // 推荐视频列表
-
-        return "community/consultation";
-    }
-    /**
-     * 选择/搜索车型页
-     *
-     * @param model
-     * @return
-     */
-    @RequestMapping("/page/vehicle")
-    public String vehiclePage(Model model, HttpSession session) {
-        Dbs.setDbName(Dbs.getMainDbName());
-        List<CarCategory> categories = carInfoService.queryCarCategoryList();
-        model.addAttribute("categorys", categories);
-        return "community/vehicle";
     }
 
     /**
@@ -189,11 +184,27 @@ public class WechatCommunityController {
      * @param category 类别id
      * @return
      */
-    @RequestMapping("/brands")
+    @RequestMapping("/car/brands")
     @ResponseBody
     public List<CarBrand> getBrands(Integer category) {
         Dbs.setDbName(Dbs.getMainDbName());
         return carInfoService.queryCarBrandList(category);
+    }
+
+    /**
+     * 模糊检索车型信息
+     *
+     * @param category 类别id
+     * @return
+     */
+    @RequestMapping("/car/search")
+    @ResponseBody
+    public List<CarModel> carSearch(String search, Pager pager) {
+        Dbs.setDbName(Dbs.getMainDbName());
+        if (pager == null) {
+            pager = new Pager();
+        }
+        return carInfoService.searchCarModelList(search, pager);
     }
 
     /**
@@ -210,23 +221,6 @@ public class WechatCommunityController {
     }
 
     /**
-     * 轮播图片
-     *
-     * @param category 类别id
-     * @return
-     */
-    @RequestMapping("/car/search")
-    @ResponseBody
-    public List<CarModel> carSearch(String search, Pager pager) {
-        Dbs.setDbName(Dbs.getMainDbName());
-        if (pager == null) {
-            pager = new Pager();
-        }
-        return carInfoService.searchCarModelList(search, pager);
-    }
-
-
-    /**
      * 首页最热最新视频列表
      * @param type 查询类型(hot, new)
      * @return
@@ -239,6 +233,60 @@ public class WechatCommunityController {
             pager = new Pager();
         }
         return carInfoService.videoIndexList(type, pager);
+    }
+
+    /**
+     * 首页最热最新视频列表
+     * @param type 查询类型(hot, new)
+     * @return
+     */
+    @RequestMapping("/video/typeVideoList")
+    public String videoIndexList(Integer classId, String title, Integer seriesId, Integer modelId, Model model) {
+        model.addAttribute("title", title);
+        model.addAttribute("videoList", carInfoService.queryCarVideoBySeriesId(classId, seriesId, modelId));
+        return "community/videos/videoList";
+    }
+
+
+    /**
+     * 视频播放页面
+     * @param videoId 视频id
+     * @return
+     */
+    @RequestMapping("/video/toVideoPlayer")
+    public String toVideoPlayer(Integer videoId, HttpSession session, Model model){
+        Dbs.setDbName(Dbs.getMainDbName());
+        CarVideo video = carInfoService.queryCarVideoById(videoId);
+        User user = (User)session.getAttribute(BasicContant.MASTERWORKER_SESSION);
+        user = userService.selectByPrimaryKey(user.getId());
+        model.addAttribute("user", user);
+        boolean autoPlay = false;
+        boolean isVip = user.getEndTime() != null && user.getEndTime().getTime() > (new Date()).getTime();
+        model.addAttribute("vip", isVip ? "vip" : "");
+        if(video != null){
+            if(CarVideo.Member.NORMAL.getCode().equals(video.getMember())){ // 免费
+                autoPlay = true;
+            }else {
+                if(isVip){//是会员
+                    autoPlay = true;
+                }else{ // 无会员或已到期
+                    autoPlay = true;
+                }
+            }
+        }
+
+        if(autoPlay){
+            model.addAttribute("autoPlay", "autoPlay");
+            video.setBrowseNum(video.getBrowseNum() + 1);
+            CarVideo update = new CarVideo();
+            update.setBrowseNum(video.getBrowseNum());
+            update.setId(videoId);
+            carInfoService.updateCarVideoInfo(update);
+            // 添加观看历史记录
+
+        }
+        model.addAttribute("video", video);
+        return "community/videos/carVideoPlayer";
     }
 
 }

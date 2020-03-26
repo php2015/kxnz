@@ -1,16 +1,14 @@
 package com.kyx.biz.wechat.service.impl;
 
-import com.kyx.basic.user.model.User;
 import com.kyx.basic.util.BasicContant;
 import com.kyx.biz.wechat.mapper.WechatCommunityMapper;
 import com.kyx.biz.wechat.model.WechatCommunity;
 import com.kyx.biz.wechat.service.WechatCommunityService;
-import me.chanjar.weixin.mp.bean.result.WxMpUser;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpSession;
-import java.util.Date;
+import java.util.List;
 
 @Service("wechatCommunityService")
 public class WechatCommunityServiceImpl implements WechatCommunityService {
@@ -19,7 +17,13 @@ public class WechatCommunityServiceImpl implements WechatCommunityService {
 
     @Override
     public WechatCommunity getByAppidAndOpenId(String appid, String openId) {
-        return wechatCommunityMapper.getByAppidAndOpenId(appid, openId);
+        List<WechatCommunity> exist = wechatCommunityMapper.getByAppidAndOpenId(appid, openId);
+        if(exist == null) return null;
+        else if(exist.size() == 1) return exist.get(0);
+        else {
+            wechatCommunityMapper.removeByAppidAndOpenId(appid, openId);
+            return null;
+        }
     }
 
     @Override
@@ -30,12 +34,15 @@ public class WechatCommunityServiceImpl implements WechatCommunityService {
 
     @Override
     public boolean addWechatCommunity(HttpSession session, String userName) {
-        Object attribute = session.getAttribute(BasicContant.WXMPUSER_SESSION);
+        Object attribute = session.getAttribute(BasicContant.WXMP_OPENID_SESSION);
         if (attribute != null) {
-            WxMpUser wxMpUser = (WxMpUser) attribute;
+            String openId = (String) attribute;
             String appid = (String) session.getAttribute(BasicContant.WXMP_APPID_SESSION);
-            WechatCommunity community = new WechatCommunity(appid, wxMpUser.getOpenId(), userName);
-            return wechatCommunityMapper.insertSelective(community) > 0;
+            List<WechatCommunity> exist = wechatCommunityMapper.getByAppidAndOpenId(appid, openId);
+            if(exist == null || exist.isEmpty()){
+                WechatCommunity community = new WechatCommunity(appid, openId, userName);
+                return wechatCommunityMapper.insertSelective(community) > 0;
+            }
         }
         return false;
     }
@@ -43,5 +50,10 @@ public class WechatCommunityServiceImpl implements WechatCommunityService {
     @Override
     public WechatCommunity getWechatCommunityByUserName(String userName) {
         return wechatCommunityMapper.selectByUserName(userName);
+    }
+
+    @Override
+    public int removeByAppidAndOpenId(String appid, String openId) {
+        return wechatCommunityMapper.removeByAppidAndOpenId(appid, openId);
     }
 }

@@ -39,12 +39,12 @@ public class BasicContant {
   public static String WECHAT_CONFIG_SESSION = "wechatConfigSession";
   public static String WECHAT_CUSTOMER_SESSION = "wechatCustomerSession";
   public static String CUSTOMER_SESSION = "customerSession";
-  public static String MASTERWORKER_SESSION = "masterWorkerSession";
+  public static String MASTERWORKER_SESSION = "masterWorkerSession"; // 社区用户登录信息
 
   public static final String WXMPUSER_SESSION = "wxmpuser_session"; // 微信用户信息
-  public static final String WXMP_APPID_SESSION = "wxmpuser_appid_session"; // 微信公总号用户信息
+  public static final String WXMP_APPID_SESSION = "wxmpuser_appid_session"; // 社区登录关联公总号appid
 
-  public static final String WXMP_OPENID_SESSION = "openId"; // 用户授权的openId
+  public static final String WXMP_OPENID_SESSION = "openId"; // 社区登录用户授权的openId
 
   public static final String WXMP_PAYTYPE_JSAPI = "JSAPI"; // JSAPI
 
@@ -62,7 +62,6 @@ public class BasicContant {
 
   public static String RESFAIL_XML = "<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[报文为空]]></return_msg></xml>";
   /**
-   *
    * 角色表role_key字段: 微信社区注册用户角色记录
    */
   public static final String ROLE_KEY_WX_USER = "ROLE_WX_USER";

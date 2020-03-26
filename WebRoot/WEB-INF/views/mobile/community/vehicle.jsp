@@ -16,14 +16,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black">
 	<title>车型查找</title>
-	<link href="lib/mui/css/mui.min.css" rel="stylesheet" />
-	<link href="lib/mui/css/mui-icons-extra.css" rel="stylesheet" />
 	<link href="lib/mui/css/mui.indexedlist.css" rel="stylesheet" />
-	<link href="lib/mui/css/app.css" rel="stylesheet" />
-	<script src="lib/mui/js/mui.min.js"></script>
-	<script src="lib/jquery/jquery-3.4.1.js"></script>
-	<script src="lib/jquery/jsrender.js"></script>
-
 	<style>
 		#vehicle-page {
 			height: 100%;
@@ -122,16 +115,13 @@
 			background-color: transparent;
 		}
 	</style>
-
 	<style>
-		#vehicle-page .search-box {
+		#vehicle-page .mui-backdrop {
 			display: none;
-			position: absolute;
 			top: 0px;
 			left: 0px;
 			bottom: 0px;
 			right: 0px;
-			background-color: rgba(111, 111, 111, 0.32);
 			padding: 30px 25px;
 		}
 
@@ -191,7 +181,7 @@
 		<ul id="car-brands" class="mui-table-view mui-grid-view mui-grid-9" style="padding:10px;"></ul>
 		<img class="empty-tips" src="image/no_datas.png"/>
 	</div>
-	<div id="search-box" class="search-box">
+	<div id="search-box" class="search-box mui-backdrop">
 		<div class="mui-card">
 			<div class="mui-card-header">
 				<span class="img-btn-close" onclick="searchHide();"></span>
@@ -202,12 +192,12 @@
 				</div>
 			</div>
 			<div class="mui-card-content">
+				<div class="mui-scroll-wrapper">
+					<div class="mui-scroll">
+						<ul class="mui-table-view"></ul>
+					</div>
+				</div>
 				<div class="mui-indexed-list-empty-alert">没有数据</div>
-				<ul class="mui-table-view"></ul>
-				<button type="button" data-loading-icon="mui-spinner mui-spinner-custom"
-						data-loading-text="加载中..."
-						class="mui-btn mui-btn-outlined mui-list-load-more">加载更多
-				</button>
 			</div>
 		</div>
 	</div>
@@ -226,7 +216,7 @@
 <script type="text/x-jsrender" id="carModelListBoxTpl">
 {{for}}
 	<li class="mui-table-view-cell mui-media mui-col-xs-3 mui-col-sm-2">
-		<a href="wechat/carModel/series/{{:id}}.do?name={{:brandName}}">
+		<a href="wechat/carModel/series/{{:id}}.do?name={{:brandName}}" data-name="{{:brandName}}">
 			<span class="mui-icon brand-item-img"><img src="mobile/shop/getImage.do?path=car/{{:logoUrl}}" onerror="this.onerror='';this.src='image/no_picture.jpg'"></span>
 			<div class="mui-media-body">{{:brandName}}</div>
 		</a>
@@ -296,7 +286,7 @@
 	 */
 	function renderCarBrandView() {
 		var id = $("#vehicle-page .car-categorys .car-category.active").attr("data-id");
-		mui.post('wechat/community/brands.do',{category : id},function(data){
+		mui.post('wechat/community/car/brands.do',{category : id},function(data){
 			$("#vehicle-page #car-brands").empty();
 			if(data == null || data.length == 0){
 				$("#vehicle-page .empty-tips").css("display", "block");
@@ -310,13 +300,72 @@
 			$("#vehicle-page #car-brands").append(html);
 		});
 	}
+	function renderSearchView(data) {
+		return $("#searchListBoxTpl").render(data);
+	}
+	(function($) {
+		var queryLimit = 20;
+
+		$('#vehicle-page #search-box .mui-scroll-wrapper').scroll({
+			bounce: false,
+			indicators: true, //是否显示滚动条
+			deceleration: mui.os.ios ? 0.003 : 0.003 //阻尼系数
+		});
+
+		var createHtml = function(element, index, limit, down) {
+			var page = down ? 1 : (element.getAttribute("data-page") || 0) * 1 + 1;
+			element.setAttribute("data-page", page);
+			var input = $("#vehicle-page #search-box #search").value;
+			var data = [];
+			mui.ajax('wechat/community/car/search.do',{
+				async: false,
+				data: {search: input, page: 1, limit: 20},
+				type: 'post',
+				dataType: 'json',
+				timeout: 10000,
+				success: function(res){data = res;},
+				error: function(xhr, type, errorThrown){console.log(type);}
+			});
+			//console.log("index: "+index, "limit: "+limit, "type: "+type, "page: "+page);
+			return renderSearchView(data);
+		};
+		//循环初始化所有下拉刷新，上拉加载。
+		$.ready(function() {
+			$.each(document.querySelectorAll('#vehicle-page #search-box .mui-scroll'), function(index, pullRefreshEl) {
+				$(pullRefreshEl).pullToRefresh({
+					down: {
+						callback: function() {
+							var self = this;
+							setTimeout(function() {
+								var ul = self.element.querySelector('.mui-table-view');
+								ul.innerHTML = createHtml(self.element.parentNode.parentElement, index, queryLimit, true);
+								self.endPullDownToRefresh();
+								self.refresh(true);
+							}, 1000);
+						}
+					},
+					up: {
+						callback: function() {
+							var self = this;
+							setTimeout(function() {
+								var ul = self.element.querySelector('.mui-table-view');
+								var html = createHtml(self.element.parentNode.parentElement, index, queryLimit);
+								ul.innerHTML += html;
+								self.endPullUpToRefresh(html == null || html.length == 0);
+							}, 1000);
+						},
+						auto: true
+					}
+				});
+			});
+		});
+
+	})(mui);
 
 	// 检索车型
 	function searchModelData() {
 		$("#vehicle-page #search-box #search-page").val(1);
 		$("#vehicle-page #search-box .mui-table-view").empty();
-		$("#vehicle-page #search-box button.mui-list-load-more").removeClass("none-data");
-		$("#vehicle-page #search-box button.mui-list-load-more").hide();
 		var input = $("#vehicle-page #search-box #search").val();
 
 		mui.post("wechat/community/car/search.do", {

@@ -14,12 +14,6 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1,user-scalable=no" />
     <title></title>
-    <link href="lib/mui/css/mui.min.css" rel="stylesheet" />
-    <link href="lib/mui/css/style.css" rel="stylesheet" />
-    <script src="lib/mui/js/mui.min.js"></script>
-    <script src="lib/jquery/jquery-3.4.1.js"></script>
-    <script src="lib/jquery/jsrender.js"></script>
-
     <style>
         .user-info{
             padding: 15px 0;

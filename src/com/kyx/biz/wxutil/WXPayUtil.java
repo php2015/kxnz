@@ -8,16 +8,15 @@ import org.w3c.dom.NodeList;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.io.StringWriter;
+import java.io.*;
 import java.security.MessageDigest;
 import java.security.SecureRandom;
 import java.text.SimpleDateFormat;
@@ -76,7 +75,7 @@ public class WXPayUtil {
         org.w3c.dom.Document document = WXPayXmlUtil.newDocument();
         org.w3c.dom.Element root = document.createElement("xml");
         document.appendChild(root);
-        for (String key: data.keySet()) {
+        for (String key : data.keySet()) {
             String value = data.get(key);
             if (value == null) {
                 value = "";
@@ -97,8 +96,7 @@ public class WXPayUtil {
         String output = writer.getBuffer().toString(); //.replaceAll("\n|\r", "");
         try {
             writer.close();
-        }
-        catch (Exception ex) {
+        } catch (Exception ex) {
         }
         return output;
     }
@@ -108,7 +106,7 @@ public class WXPayUtil {
      * 生成带有 sign 的 XML 格式字符串
      *
      * @param data Map类型数据
-     * @param key API密钥
+     * @param key  API密钥
      * @return 含有sign字段的XML
      */
     public static String generateSignedXml(final Map<String, String> data, String key) throws Exception {
@@ -118,8 +116,8 @@ public class WXPayUtil {
     /**
      * 生成带有 sign 的 XML 格式字符串
      *
-     * @param data Map类型数据
-     * @param key API密钥
+     * @param data     Map类型数据
+     * @param key      API密钥
      * @param signType 签名类型
      * @return 含有sign字段的XML
      */
@@ -134,13 +132,13 @@ public class WXPayUtil {
      * 判断签名是否正确
      *
      * @param xmlStr XML格式数据
-     * @param key API密钥
+     * @param key    API密钥
      * @return 签名是否正确
      * @throws Exception
      */
     public static boolean isSignatureValid(String xmlStr, String key) throws Exception {
         Map<String, String> data = xmlToMap(xmlStr);
-        if (!data.containsKey(WXPayConstants.FIELD_SIGN) ) {
+        if (!data.containsKey(WXPayConstants.FIELD_SIGN)) {
             return false;
         }
         String sign = data.get(WXPayConstants.FIELD_SIGN);
@@ -151,7 +149,7 @@ public class WXPayUtil {
      * 判断签名是否正确，必须包含sign字段，否则返回false。使用MD5签名。
      *
      * @param data Map类型数据
-     * @param key API密钥
+     * @param key  API密钥
      * @return 签名是否正确
      * @throws Exception
      */
@@ -162,14 +160,14 @@ public class WXPayUtil {
     /**
      * 判断签名是否正确，必须包含sign字段，否则返回false。
      *
-     * @param data Map类型数据
-     * @param key API密钥
+     * @param data     Map类型数据
+     * @param key      API密钥
      * @param signType 签名方式
      * @return 签名是否正确
      * @throws Exception
      */
     public static boolean isSignatureValid(Map<String, String> data, String key, SignType signType) throws Exception {
-        if (!data.containsKey(WXPayConstants.FIELD_SIGN) ) {
+        if (!data.containsKey(WXPayConstants.FIELD_SIGN)) {
             return false;
         }
         String sign = data.get(WXPayConstants.FIELD_SIGN);
@@ -180,7 +178,7 @@ public class WXPayUtil {
      * 生成签名
      *
      * @param data 待签名数据
-     * @param key API密钥
+     * @param key  API密钥
      * @return 签名
      */
     public static String generateSignature(final Map<String, String> data, String key) throws Exception {
@@ -190,8 +188,8 @@ public class WXPayUtil {
     /**
      * 生成签名. 注意，若含有sign_type字段，必须和signType参数保持一致。
      *
-     * @param data 待签名数据
-     * @param key API密钥
+     * @param data     待签名数据
+     * @param key      API密钥
      * @param signType 签名方式
      * @return 签名
      */
@@ -210,11 +208,9 @@ public class WXPayUtil {
         sb.append("key=").append(key);
         if (SignType.MD5.equals(signType)) {
             return MD5(sb.toString()).toUpperCase();
-        }
-        else if (SignType.HMACSHA256.equals(signType)) {
+        } else if (SignType.HMACSHA256.equals(signType)) {
             return HMACSHA256(sb.toString(), key);
-        }
-        else {
+        } else {
             throw new Exception(String.format("Invalid sign_type: %s", signType));
         }
     }
@@ -252,8 +248,9 @@ public class WXPayUtil {
 
     /**
      * 生成 HMACSHA256
+     *
      * @param data 待处理数据
-     * @param key 密钥
+     * @param key  密钥
      * @return 加密结果
      * @throws Exception
      */
@@ -271,6 +268,7 @@ public class WXPayUtil {
 
     /**
      * 日志
+     *
      * @return
      */
     public static Logger getLogger() {
@@ -280,53 +278,123 @@ public class WXPayUtil {
 
     /**
      * 获取当前时间戳，单位秒
+     *
      * @return
      */
     public static long getCurrentTimestamp() {
-        return System.currentTimeMillis()/1000;
+        return System.currentTimeMillis() / 1000;
     }
 
     /**
      * 获取当前时间戳，单位毫秒
+     *
      * @return
      */
     public static long getCurrentTimestampMs() {
         return System.currentTimeMillis();
     }
-    public static String inputStream2String(InputStream inStream, String encoding){
+
+    public static String inputStream2String(InputStream inStream, String encoding) {
         String result = null;
         ByteArrayOutputStream outStream = null;
         try {
-         if(inStream != null){
-          outStream = new ByteArrayOutputStream();
-          byte[] tempBytes = new byte[1024];
-          int count = 0;
-          while((count = inStream.read(tempBytes)) != -1){
-           outStream.write(tempBytes, 0, count);
-          }
-          tempBytes = null;
-          outStream.flush();
-          result = new String(outStream.toByteArray(), encoding);
-          outStream.close();
-         }
+            if (inStream != null) {
+                outStream = new ByteArrayOutputStream();
+                byte[] tempBytes = new byte[1024];
+                int count = 0;
+                while ((count = inStream.read(tempBytes)) != -1) {
+                    outStream.write(tempBytes, 0, count);
+                }
+                tempBytes = null;
+                outStream.flush();
+                result = new String(outStream.toByteArray(), encoding);
+                outStream.close();
+            }
         } catch (Exception e) {
-         result = null;
-        } 
+            result = null;
+        }
         return result;
-       }
-    
-    /**
-	 * 获得唯一订单号
-	 */
-	public static String getUniqueOrder() {
-		 SimpleDateFormat format = new SimpleDateFormat("YYYYMMddHHmmss");
-		 String format2 = format.format(new Date());
-		 int hashCodeV = UUID.randomUUID().toString().hashCode();  
-		 if(hashCodeV < 0) {
-			//有可能是负数
-			 hashCodeV = - hashCodeV;  
-		 }
-		 return "pk"+format2+String.format("%012d", hashCodeV);  
-	}
+    }
 
+    /**
+     * 获得唯一订单号
+     */
+    public static String getUniqueOrder() {
+        SimpleDateFormat format = new SimpleDateFormat("YYYYMMddHHmmss");
+        String format2 = format.format(new Date());
+        int hashCodeV = UUID.randomUUID().toString().hashCode();
+        if (hashCodeV < 0) {
+            //有可能是负数
+            hashCodeV = -hashCodeV;
+        }
+        return "pk" + format2 + String.format("%012d", hashCodeV);
+    }
+
+    /**
+     * 获取请求的IP的地址
+     *
+     * @return
+     */
+    public static String getIpAdr(HttpServletRequest request) {
+
+        // 获取请求ip地址
+        String ip = request.getHeader("x-forwarded-for");
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getHeader("WL-Proxy-Client-IP");
+        }
+        if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+            ip = request.getRemoteAddr();
+        }
+        if (ip.indexOf(",") != -1) {
+            String[] ips = ip.split(",");
+            ip = ips[0].trim();
+        }
+
+        return ip;
+    }
+
+    //向前台输出
+    public static void toPageXml(HttpServletResponse response, String message) {
+        try {
+            response.setContentType("application/xml; charset=utf-8");//
+            PrintWriter out = response.getWriter();
+            out.print(message);
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    //向前台输出
+    public static void toPageText(HttpServletResponse response, String message) {
+        try {
+            response.setContentType("text/html; charset=utf-8");//
+            PrintWriter out = response.getWriter();
+            out.print(message);
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+
+    //向前台输出
+    public static void toPageRseult(HttpServletResponse response, String message) {
+        try {
+            BufferedOutputStream out = new BufferedOutputStream(response.getOutputStream());
+            out.write(message.getBytes());
+            out.flush();
+            out.close();
+        }catch (IOException e){
+
+            e.printStackTrace();
+        }
+    }
 }

@@ -45,7 +45,24 @@ public class BasicContant {
   public static final String WXMP_APPID_SESSION = "wxmpuser_appid_session"; // 微信公总号用户信息
 
   public static final String WXMP_OPENID_SESSION = "openId"; // 用户授权的openId
+
+  public static final String WXMP_PAYTYPE_JSAPI = "JSAPI"; // JSAPI
+
+  public static final String WXMP_NOTIFY_URL = "http://lay.easy.echosite.cn/liantu/wechat/community/pay/notify.do"; // 回调地址
+
+  public static final String WXMP_UNIFIEDORDER_URL ="https://api.mch.weixin.qq.com/pay/unifiedorder";
+
+  public static final Integer ORDER_STATUS_ONE = 1;//订单取消
+
+  public static final Integer ORDER_STATUS_TWO = 2;//订单未完成
+
+  public static final Integer ORDER_STATUS_THREE = 3;//订单已完成
+
+  public static String RESSUCCESS_XML = "<xml><return_code><![CDATA[SUCCESS]]></return_code><return_msg><![CDATA[OK]]></return_msg></xml>";
+
+  public static String RESFAIL_XML = "<xml><return_code><![CDATA[FAIL]]></return_code><return_msg><![CDATA[报文为空]]></return_msg></xml>";
   /**
+   *
    * 角色表role_key字段: 微信社区注册用户角色记录
    */
   public static final String ROLE_KEY_WX_USER = "ROLE_WX_USER";

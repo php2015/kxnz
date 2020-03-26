@@ -71,6 +71,7 @@ public class User implements Serializable {
     private String invitationCode; // 邀请码
 	private String nickName;
 	private String introduction;
+	@JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date endTime;
 
 	private static final long serialVersionUID = 1L;

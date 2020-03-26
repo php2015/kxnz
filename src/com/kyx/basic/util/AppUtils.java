@@ -10,6 +10,7 @@ import com.kyx.basic.shops.model.Shops;
 import com.kyx.basic.user.model.User;
 import com.kyx.biz.wechat.model.WechatConfig;
 import com.kyx.biz.wechat.vo.WechartSendVo;
+import org.apache.commons.lang3.time.DateFormatUtils;
 
 public class AppUtils {
 
@@ -326,5 +327,23 @@ public class AppUtils {
     }
 
     return bool;
+  }
+
+  /**
+   * <pre>
+   * 得到当前时间前/后几个月时间
+   * monthNum 3:后三个月，-3:前三个月
+   * </pre>
+   *
+   * @param monthNum
+   * @return
+   */
+  public static Date getDayByMonth(Date current, int monthNum) {
+    Calendar cal = Calendar.getInstance();
+    if(current != null && current.getTime() >= cal.getTime().getTime()){
+      cal.setTime(current);
+    }
+    cal.add(cal.MONTH, monthNum);
+    return  cal.getTime();
   }
 }

@@ -14,10 +14,11 @@
     <result column="creat_time" jdbcType="TIMESTAMP" property="creatTime" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
     <result column="pay_type" jdbcType="INTEGER" property="payType" />
+    <result column="transaction_id" jdbcType="VARCHAR" property="transactionId" />
   </resultMap>
   <sql id="Base_Column_List">
     id, user_id, meal_id, view_id, order_no, order_type, order_status, order_amt, pay_amount, 
-    creat_time, update_time, pay_type
+    creat_time, update_time, pay_type, transaction_id
   </sql>
   <select id="selectByPrimaryKey" parameterType="java.lang.Integer" resultMap="BaseResultMap">
     select 
@@ -34,11 +35,11 @@
     insert into community_order (user_id, meal_id, view_id, 
       order_no, order_type, order_status, 
       order_amt, pay_amount, creat_time, 
-      update_time, pay_type)
+      update_time, pay_type,transaction_id)
     values (#{userId,jdbcType=INTEGER}, #{mealId,jdbcType=INTEGER}, #{viewId,jdbcType=INTEGER}, 
       #{orderNo,jdbcType=VARCHAR}, #{orderType,jdbcType=INTEGER}, #{orderStatus,jdbcType=INTEGER}, 
       #{orderAmt,jdbcType=DECIMAL}, #{payAmount,jdbcType=DECIMAL}, #{creatTime,jdbcType=TIMESTAMP}, 
-      #{updateTime,jdbcType=TIMESTAMP}, #{payType,jdbcType=INTEGER})
+      #{updateTime,jdbcType=TIMESTAMP}, #{payType,jdbcType=INTEGER},#{transactionId,jdbcType=VARCHAR})
   </insert>
   <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="com.kyx.biz.pay.model.CommunityOrder"
           useGeneratedKeys="true">
@@ -75,7 +76,10 @@
         update_time,
       </if>
       <if test="payType != null">
-        pay_type,
+      pay_type,
+    </if>
+      <if test="transactionId != null">
+        transaction_id,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -111,6 +115,9 @@
       </if>
       <if test="payType != null">
         #{payType,jdbcType=INTEGER},
+      </if>
+      <if test="transactionId != null">
+        #{transactionId,jdbcType=VARCHAR},
       </if>
     </trim>
   </insert>
@@ -150,6 +157,9 @@
       <if test="payType != null">
         pay_type = #{payType,jdbcType=INTEGER},
       </if>
+      <if test="transactionId != null">
+        transaction_id = #{transactionId,jdbcType=VARCHAR},
+      </if>
     </set>
     where id = #{id,jdbcType=INTEGER}
   </update>
@@ -165,7 +175,30 @@
       pay_amount = #{payAmount,jdbcType=DECIMAL},
       creat_time = #{creatTime,jdbcType=TIMESTAMP},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
-      pay_type = #{payType,jdbcType=INTEGER}
+      pay_type = #{payType,jdbcType=INTEGER},
+      transaction_id = #{transactionId,jdbcType=VARCHAR}
     where id = #{id,jdbcType=INTEGER}
   </update>
+
+  <select id="countOrderByOrderNo"  resultType="java.lang.Integer">
+    select count(1)
+    from community_order
+    where order_no = #{orderNo,jdbcType=VARCHAR} and order_status = #{orderStatus,jdbcType = INTEGER}
+  </select>
+
+
+  <select id="selectByOrderNo"  resultMap="BaseResultMap">
+   select
+   <include refid="Base_Column_List" />
+   from  community_order
+   where order_no = #{orderNo,jdbcType=VARCHAR} and order_status = #{orderStatus,jdbcType = INTEGER}
+
+  </select>
+
+  <select id="countByUserIdAndViewId" resultType="java.lang.Integer">
+
+    select  count(1) from community_order
+
+     where user_id = #{userId,jdbcType = INTEGER} and view_id = #{viewId,jdbcType=INTEGER} and order_status = 3
+  </select>
 </mapper>

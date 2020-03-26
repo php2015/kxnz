@@ -6,7 +6,7 @@ public class MyWxConfig extends WXPayConfig {
 
   public String getAppID() {
 
-    return "wx3c957523d27e8cb0";
+    return "wx88aa9e73692893d1";
   }
 
   @Override
@@ -24,7 +24,7 @@ public class MyWxConfig extends WXPayConfig {
 
   public String getAppsecret() {
 
-    return "1aaf204872fc276bfedf9c655150a9b5";
+    return "4f011b7c6fa49399013bf7f7b6b463c9";
   }
 
 
@@ -35,7 +35,7 @@ public class MyWxConfig extends WXPayConfig {
 
   public String getEncodingaeskey() {
 
-    return "pYDx1Th7wx7S8JSTm0Um2kkOuf1DnmJ8uWJxCpmg4A8";
+    return "lbOwh6P6f2M6olAllxXApnSA7a4b7HbX5Peu2leFkKh";
   }
 
   @Override
@@ -50,4 +50,4 @@ public class MyWxConfig extends WXPayConfig {
     return null;
   }
 
-  }
+}

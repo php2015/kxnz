@@ -2,14 +2,13 @@ package com.kyx.biz.pay.service.impl;
 
 import com.kyx.biz.pay.mapper.CommunityMealMapper;
 import com.kyx.biz.pay.model.CommunityMeal;
-import com.kyx.biz.pay.service.ComunityMealService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.kyx.biz.pay.service.CommunityMealService;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.util.List;
-@Service("comunityMealService")
-public class ComunityMealServiceImpl implements ComunityMealService {
+@Service("communityMealService")
+public class CommunityMealServiceImpl implements CommunityMealService {
      @Resource
      private CommunityMealMapper communityMealMapper;
     /**

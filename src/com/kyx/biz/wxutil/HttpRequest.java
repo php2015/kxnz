@@ -1,9 +1,7 @@
 package com.kyx.biz.wxutil;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
+import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.List;
@@ -77,31 +75,35 @@ public class HttpRequest {
     public static String sendPost(String url, String param) {
         PrintWriter out = null;
         BufferedReader in = null;
-        String result = "";
+        StringBuilder sb = new StringBuilder();
         try {
             URL realUrl = new URL(url);
             // 打开和URL之间的连接
-            URLConnection conn = realUrl.openConnection();
+            HttpURLConnection httpConnection = (HttpURLConnection) realUrl.openConnection();
             // 设置通用的请求属性
-            conn.setRequestProperty("accept", "*/*");
-            conn.setRequestProperty("connection", "Keep-Alive");
-            conn.setRequestProperty("user-agent",
+            httpConnection.setRequestProperty("accept", "*/*");
+            httpConnection.setRequestProperty("httpConnectionection", "Keep-Alive");
+            httpConnection.setRequestProperty("user-agent",
                     "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+            httpConnection.setRequestProperty("Content-Type", "application/json;charset=UTF-8");
+            // 显式地设置为POST，默认为GET
+            httpConnection.setRequestMethod("POST");
             // 发送POST请求必须设置如下两行
-            conn.setDoOutput(true);
-            conn.setDoInput(true);
+            httpConnection.setDoOutput(true);
+            httpConnection.setDoInput(true);
+            // post请求不应该使用cache
+            httpConnection.setUseCaches(false);
             // 获取URLConnection对象对应的输出流
-            out = new PrintWriter(conn.getOutputStream());
+            out = new PrintWriter(new OutputStreamWriter(httpConnection.getOutputStream(), "UTF-8"));
             // 发送请求参数
-            out.print(param);
+            out.write(param);
             // flush输出流的缓冲
             out.flush();
             // 定义BufferedReader输入流来读取URL的响应
-            in = new BufferedReader(
-                    new InputStreamReader(conn.getInputStream()));
-            String line;
+            in = new BufferedReader(new InputStreamReader(httpConnection.getInputStream(), "UTF-8"));
+            String line = "";
             while ((line = in.readLine()) != null) {
-                result += line;
+                sb.append(line);
             }
         } catch (Exception e) {
             System.out.println("发送 POST 请求出现异常！"+e);
@@ -121,6 +123,6 @@ public class HttpRequest {
                 ex.printStackTrace();
             }
         }
-        return result;
+        return sb.toString();
     } 
 }

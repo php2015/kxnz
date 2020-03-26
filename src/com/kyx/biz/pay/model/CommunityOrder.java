@@ -1,5 +1,7 @@
 package com.kyx.biz.pay.model;
 
+import com.alibaba.fastjson.annotation.JSONField;
+
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
@@ -27,7 +29,7 @@ public class CommunityOrder implements Serializable {
     private Integer viewId;
 
     /**
-     * 订单编号
+     * 商户订单编号
      */
     private String orderNo;
 
@@ -54,17 +56,29 @@ public class CommunityOrder implements Serializable {
     /**
      * 订单创建时间
      */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date creatTime;
 
     /**
      * 更新时间
      */
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")
     private Date updateTime;
 
     /**
      * 1、微信，2、支付宝，3、余额
      */
     private Integer payType;
+
+    private String transactionId;
+
+    public String getTransactionId() {
+        return transactionId;
+    }
+
+    public void setTransactionId(String transactionId) {
+        this.transactionId = transactionId;
+    }
 
     private static final long serialVersionUID = 1L;
 

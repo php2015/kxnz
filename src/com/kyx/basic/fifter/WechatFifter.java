@@ -46,7 +46,7 @@ public class WechatFifter implements Filter{
 						)
 						&& (urlPathArr.length > 3 && !"regIndex.do".equals(urlPathArr[3]) &&
 						!"pwdIndex.do".equals(urlPathArr[3]) && !"register.do".equals(urlPathArr[3])
-						&& !"login.do".equals(urlPathArr[3]))
+						&& !"login.do".equals(urlPathArr[3]) && !"modifyPwd.do".equals(urlPathArr[3]))
 		) {
 			HttpSession session = req.getSession(true);
 			if (("community".equals(urlPathArr[2]) && session.getAttribute(BasicContant.MASTERWORKER_SESSION) == null) ||

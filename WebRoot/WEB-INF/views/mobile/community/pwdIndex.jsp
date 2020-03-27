@@ -24,33 +24,6 @@
 		
 	</head>
 	<style>
-		.area {
-			margin: 20px auto 0px auto;
-		}
-
-		.mui-input-group {
-			margin-top: 10px;
-		}
-
-		.mui-input-group:first-child {
-			margin-top: 20px;
-		}
-
-		.mui-input-group label {
-			width: 22%;
-		}
-
-		.mui-input-row label~input,
-		.mui-input-row label~select,
-		.mui-input-row label~textarea {
-			width: 78%;
-		}
-
-		.mui-checkbox input[type=checkbox],
-		.mui-radio input[type=radio] {
-			top: 6px;
-		}
-
 		.mui-content-padded {
 			margin-top: 25px;
 		}
@@ -58,7 +31,6 @@
 		.mui-btn {
 			padding: 10px;
 		}
-
 		.link-area {
 			display: block;
 			margin-top: 25px;
@@ -69,69 +41,101 @@
 			color: #bbb;
 			padding: 0px 8px;
 		}
-
-		.oauth-area {
-			position: absolute;
-			bottom: 20px;
-			left: 0px;
-			text-align: center;
-			width: 100%;
-			padding: 0px;
-			margin: 0px;
-		}
-
-		.oauth-area .oauth-btn {
-			display: inline-block;
-			width: 50px;
-			height: 50px;
-			background-size: 30px 30px;
-			background-position: center center;
-			background-repeat: no-repeat;
-			margin: 0px 20px;
-			/*-webkit-filter: grayscale(100%); */
-			border: solid 1px #ddd;
-			border-radius: 25px;
-		}
-
-		.oauth-area .oauth-btn:active {
-			border: solid 1px #aaa;
-		}
-
-		.oauth-area .oauth-btn.disabled {
-			background-color: #ddd;
-		}
 	</style>
 
 	<body>
 		<header class="mui-bar mui-bar-nav">
-			<h1 class="mui-title">登录</h1>
+			<a class="mui-action-back mui-icon mui-icon-left-nav mui-pull-left"></a>
+			<h1 class="mui-title">忘记密码</h1>
 		</header>
 		<div class="mui-content">
-			<form id='login-form' class="mui-input-group" style="margin-top: 50px	">
+			<form id='forget-form' class="mui-input-group" style="margin-top: 50px	" >
 				<div class="mui-input-row">
-					<label>账号</label>
-					<input id='account' type="text" class="mui-input-clear mui-input" placeholder="请输入手机号">
+					<label>手机号</label>
+					<input id="userName" name='userName' type="text" class="mui-input-clear mui-input" placeholder="请输入手机号">
 				</div>
 				<div class="mui-input-row">
-					<label>密码</label>
-					<input id='password' type="password" class="mui-input-clear mui-input" placeholder="请输入密码">
+					<label>用户名</label>
+					<input id='userRealname' name='userRealname' type="text" class="mui-input-clear mui-input" placeholder="请输入注册时的用户名">
+				</div>
+				<div class="mui-input-row">
+					<label>新密码</label>
+					<input id='pwd2' name='pwd2' type="password" class="mui-input-password" placeholder="">
+				</div>
+				<div class="mui-input-row">
+					<label>确认密码</label>
+					<input id='pwd3' name='pwd3' type="password" class="mui-input-password" placeholder="">
 				</div>
 			</form>
 			<div class="mui-content-padded" style="margin-top: 50px">
-				<button id='login' type="button" class="mui-btn mui-btn-block mui-btn-primary">登录</button>
-				<div class="link-area"><a id='reg'>注册账号</a> <span class="spliter">|</span> <a id='forgetPassword'>忘记密码</a>
-				</div>
+				<button id='submit' type="button" class="mui-btn mui-btn-block mui-btn-primary"
+						data-loading-icon="mui-spinner mui-spinner-custom"
+						data-loading-text="请稍后...">提交</button>
 			</div>
 		</div>
 		<script>
-			mui('body').on('tap','#reg',function(){
-				mui.openWindow({
-					url: 'wechat/community/regIndex.do'
-				});
-			}).on("tap", "#forgetPassword", function(){
-				mui.openWindow({
-					url: 'wechat/community/pwdIndex.do'
-				});
+			mui('body').on('tap','#submit',function(){
+				var me = this;
+				mui(me).button('loading');
+				var param = {userName: $("#userName").val().trim(),userRealname: $("#userRealname").val().trim(),pwd2: $("#pwd2").val().trim(),pwd3: $("#pwd3").val().trim(),};
+				if(!(/^1[3456789]\d{9}$/.test(param.userName))){
+					mui.alert("手机号码有误，请重填");
+					mui(me).button('reset');
+					return false;
+				}
+
+				if(param.userRealname == null || param.userRealname.length == 0){
+					mui.alert("用户名不能为空!");
+					mui(me).button('reset');
+					return false;
+				}
+
+				if(!param.pwd2 || param.pwd2.length == 0){
+					mui.alert("密码不能为空");
+					mui(me).button('reset');
+					return false;
+				}else if(!(/^[\w_]{1,16}$/.test(param.pwd2))){
+					mui.alert("密码只能由字母、数字、下划线组成, 且长度不能超过16位");
+					mui(me).button('reset');
+					return false;
+				}
+				if(param.pwd2 !== param.pwd3){
+					mui.alert("确认密码与新密码不一致!");
+					mui(me).button('reset');
+					return false;
+				}
+
+				mui.ajax('wechat/community/modifyPwd.do',{
+					data: JSON.stringify(param),
+					dataType:'json',
+					type:'post',//HTTP请求类型
+					timeout:10000,//超时时间设置为10秒；
+					headers:{'Content-Type':'application/json'},
+					success:function(data){
+						mui.toast(data.retMsg);
+						if(data != null && data.retCode == 'success'){
+                            mui.openWindow({
+                                url: 'wechat/community.do'
+                            });
+                            // 关闭当前页
+                            if (typeof window.listPage != 'undefined') {
+                                mui.fire(window.listPage, 'reloadData', null);
+                            }
+                            if (mui.os.plus) {
+                                mui.plusReady(function () {
+                                    var ws = plus.webview.currentWebview();
+                                    plus.webview.close(ws);
+                                });
+                            }
+                            mui.back();
+                        }else{
+                            mui(me).button('reset');
+                        }
+					},
+					error:function(xhr,type,errorThrown){
+						mui(me).button('reset');
+					}
+				})
 			});
 
 		</script>

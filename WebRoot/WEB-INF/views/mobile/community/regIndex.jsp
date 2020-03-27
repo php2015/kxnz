@@ -142,14 +142,12 @@
             mui(document.body).on('tap', '#register', function(e) {
             	var me = this;
 				mui(me).button('loading');
-                var check = true;
                 var formData={userPhoto:$("#userPhoto").val(), userAddress: $("#userAddress").val()};
 
 				var userPhone = document.getElementById("account").value;
 				if(!(/^1[3456789]\d{9}$/.test(userPhone))){
 					mui.alert("手机号码有误，请重填");
-					check = false;
-					mui(me).button('loading');
+					mui(me).button('reset');
 					return false;
 				}
 				formData.userPhone = userPhone;
@@ -157,13 +155,11 @@
 				var userPassword = document.getElementById("userPassword").value;
 				if(!userPassword || userPassword.trim() == ""){
 					mui.alert("密码不能为空");
-					check = false;
-					mui(me).button('loading');
+					mui(me).button('reset');
 					return false;
 				}else if(!(/^[\w_]{1,16}$/.test(userPassword))){
 					mui.alert("密码只能由字母、数字、下划线组成, 且长度不能超过16位");
-					check = false;
-					mui(me).button('loading');
+					mui(me).button('reset');
 					return false;
 				}
 				formData.userPassword = userPassword.trim();
@@ -171,8 +167,7 @@
 				var userRealname = document.getElementById("userRealname").value;
 				if(!userRealname || userRealname.trim() == ""){
 					mui.alert("用户名不能为空");
-					check = false;
-					mui(me).button('loading');
+					mui(me).button('reset');
 					return false;
 				}
 				formData.userRealname = userRealname.trim();
@@ -180,8 +175,7 @@
 				var email = document.getElementById("email").value;
 				if(!(/^[a-z0-9]+([._\\-]*[a-z0-9])*@([a-z0-9]+[-a-z0-9]*[a-z0-9]+.){1,63}[a-z0-9]+$/.test(email))){
 					mui.alert("邮箱格式有误，请重填");
-					check = false;
-					mui(me).button('loading');
+					mui(me).button('reset');
 					return false;
 				}
 				formData.email = email;
@@ -190,30 +184,29 @@
 				formData.invitationCode = $("#invitationCode").val();
 
 				//console.log(formData)
-				if(check) {
-					mui.ajax("wechat/community/register.do", {
-						data: {userJson: JSON.stringify(formData)},
-						dataType: 'json',
-						type: 'post',
-						timeout: 10000,
-						success: function (res) {
-							if(res != null){
-								mui.toast(res.retMsg,{ duration:'long', type:'div' });
-								if(res.retCode == "success"){
-									mui.openWindow({
-										url: 'wechat/community.do'
-									});
-								}
-							}else{
-								mui.alert("响应失败, 请稍后重试!");
+				mui.ajax("wechat/community/register.do", {
+					data: {userJson: JSON.stringify(formData)},
+					dataType: 'json',
+					type: 'post',
+					timeout: 10000,
+					success: function (res) {
+						if(res != null){
+							mui.toast(res.retMsg,{ duration:'long', type:'div' });
+							if(res.retCode == "success"){
+								mui.openWindow({
+									url: 'wechat/community.do'
+								});
+								return;
 							}
-							mui(me).button('reset');
-						},
-						error: function (xhr, type, errorThrown) {
-							mui(me).button('reset');
+						}else{
+							mui.alert("响应失败, 请稍后重试!");
 						}
-					});
-                }
+						mui(me).button('reset');
+					},
+					error: function (xhr, type, errorThrown) {
+						mui(me).button('reset');
+					}
+				});
             })
 
 		</script>

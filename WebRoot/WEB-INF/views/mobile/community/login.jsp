@@ -32,7 +32,7 @@
 			margin-top: 20px;
 		}
 
-		.mui-input-group label {
+		/*.mui-input-group label {
 			width: 25%;
 		}
 
@@ -40,7 +40,7 @@
 		.mui-input-row label~select,
 		.mui-input-row label~textarea {
 			width: 75%;
-		}
+		}*/
 
 		.mui-checkbox input[type=checkbox],
 		.mui-radio input[type=radio] {
@@ -68,9 +68,9 @@
 	</style>
 
 	<body>
-		<%--<header class="mui-bar mui-bar-nav">
+		<header class="mui-bar mui-bar-nav">
 			<h1 class="mui-title">登录</h1>
-		</header>--%>
+		</header>
 		<div class="mui-content" style="padding-top: 30px">
 			<form id='login-form' class="mui-input-group" style="margin-top: 50px	">
 				<div class="mui-input-row">
@@ -80,7 +80,7 @@
 				</div>
 				<div class="mui-input-row">
 					<label>密码</label>
-					<input id='password' type="password" class="mui-input-clear mui-input" placeholder="请输入密码"
+					<input id='password' type="password" class="mui-input-password" placeholder="请输入密码"
 						   value="111111">
 				</div>
 			</form>
@@ -88,11 +88,12 @@
 				<button id='login' type="button" class="mui-btn mui-btn-block mui-btn-primary"
 						data-loading-icon="mui-spinner mui-spinner-custom"
 						data-loading-text="登录中...">登录</button>
-				<div class="link-area"><a id='reg'>注册账号</a><%-- <span class="spliter">|</span> <a id='forgetPassword'>忘记密码</a>--%>
+				<div class="link-area"><a id='reg'>注册账号</a> <span class="spliter">|</span> <a id='forgetPassword'>忘记密码</a>
 				</div>
 			</div>
 		</div>
 		<script>
+
 			mui('body').on('tap','#reg',function(){
 				mui.openWindow({
 					url: 'wechat/community/regIndex.do'
@@ -114,11 +115,12 @@
 							mui.toast(res.retMsg,{ duration:'long', type:'div'});
 							if(res.retCode == "success"){
 								mui.openWindow({ url: 'wechat/community.do', show:{ autoShow:false }});
+								return;
 							}
 						}else{
 							mui.alert("响应失败, 请稍后重试!");
-							mui(me).button('reset');
 						}
+						mui(me).button('reset');
 					},
 					error: function (xhr, type, errorThrown) {
 						mui(me).button('reset');
